@@ -1,0 +1,16 @@
+{
+  "name": "race-indexer",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "signum-chain-walker": "^1.0.7",
+    "@er1p/event-ledger": "*"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@er1p/event-ledger",
+  "version": "1.0.0",
+  "description": "Isomorphic event ledger functionality for ER1P blockchain interactions",
+  "type": "module",
+  "module": "src/index.ts",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@signumjs/core": "^2.0.8",
+    "@signumjs/crypto": "^2.0.8",
+    "@signumjs/util": "^2.0.8",
+    "@signumjs/standards": "^2.0.8"
+  },
+  "devDependencies": {
+    "@er1p/typescript-config": "workspace:*",
+    "typescript": "^5.0.0"
+  }
+}
