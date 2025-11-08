@@ -6,7 +6,7 @@ import {
   deserializeCheckpoints,
   type CheckpointEventData,
 } from "./checkpoints-helpers";
-import type { Checkpoint } from "@er1p/types";
+import type {Checkpoint} from "../race.types.ts";
 
 describe("Checkpoint Helper Functions", () => {
   const validCheckpoint: Checkpoint = {
@@ -41,7 +41,7 @@ describe("Checkpoint Helper Functions", () => {
   describe("fromEventDataToCheckpoint", () => {
     it("should handle in type correctly", () => {
       const data = [...eventData];
-      data[7] = "i";
+      data[10] = "i";
 
       const result = fromEventDataToCheckpoint(data);
       expect(result.type).toBe("in");
@@ -49,7 +49,7 @@ describe("Checkpoint Helper Functions", () => {
 
     it("should handle out type correctly", () => {
       const data = [...eventData];
-      data[7] = "o";
+      data[10] = "o";
 
       const result = fromEventDataToCheckpoint(data);
       expect(result.type).toBe("out");
@@ -57,7 +57,7 @@ describe("Checkpoint Helper Functions", () => {
 
     it("should default to split type for unknown type", () => {
       const data = [...eventData];
-      data[7] = "unknown";
+      data[10] = "unknown";
 
       const result = fromEventDataToCheckpoint(data);
       expect(result.type).toBe("split");

@@ -2,7 +2,6 @@ import { AbstractLedgerEvent } from "./abstract-ledger-event";
 import type { Transaction } from "@signumjs/core";
 import { src44 } from "@signumjs/standards";
 import { LedgerEventRegistry } from "./ledger-event-registry";
-import type { Checkpoint, Race } from "@er1p/types";
 import * as v from "valibot";
 import { EventName } from "../event-name";
 import {
@@ -14,6 +13,7 @@ import {
   deserializeCheckpoints,
   serializeCheckpoints,
 } from "./checkpoints-helpers.ts";
+import type {Race} from "../race.types.ts";
 
 const RaceCreatedSchema = v.object({
   id: v.pipe(

@@ -1,5 +1,6 @@
 // Core types and classes
-export type { LedgerEvent, SerializableLedgerEvent } from "./types";
+export type { LedgerEvent, SerializableLedgerEvent } from "./ledger-event.types.ts";
+export type { Race } from "./race.types.ts";
 export { AbstractLedgerEvent } from "./events/abstract-ledger-event.ts";
 export { EventLedger, EventLedgerError } from "./event-ledger";
 export { EventName } from "./event-name";

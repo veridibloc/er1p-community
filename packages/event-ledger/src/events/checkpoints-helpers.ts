@@ -1,4 +1,4 @@
-import type { Checkpoint } from "@er1p/types";
+import type {Checkpoint} from "../race.types.ts";
 
 export type CheckpointEventData = any[];
 
@@ -17,7 +17,7 @@ export function fromEventDataToCheckpoint(
     );
   }
 
-  const cptype = checkpointData[7];
+  const cptype = checkpointData[10];
   let type: "in" | "out" | "split" = "split";
   if (cptype === "i") {
     type = "in";
