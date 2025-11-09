@@ -21,8 +21,7 @@
     "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm --sourcemap=external && bun run build:types",
     "build:types": "tsc --project tsconfig.build.json --emitDeclarationOnly",
     "clean": "rm -rf dist",
-    "prepublishOnly": "bun run clean && bun run build",
-    "test": "bun test"
+    "prepublishOnly": "bun run clean && bun run build"
   },
   "repository": {
     "type": "git",
