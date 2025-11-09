@@ -21,7 +21,11 @@ export async function onTransactionHandler(tx: Transaction, context: RaceIndexer
         const event = AbstractLedgerEvent.parse(tx, registry)
 
         if (event.name === CheckpointPassedEvent.Name) {
-            await upsertCheckpointPassages(event as CheckpointPassedEvent, false);
+            const shallUpdateLiveLeaderboard = context.mode === 'listening'
+            await upsertCheckpointPassages(event as CheckpointPassedEvent,
+                shallUpdateLiveLeaderboard,
+                false);
+
         } else if (raceFlowEventNames.includes(event.name)) {
             await upsertRaceFlow(event as RaceFlowEvent, false);
         } else if (event.name === RaceCreatedEvent.Name) {

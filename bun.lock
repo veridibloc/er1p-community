@@ -45,7 +45,7 @@
         "@signumjs/util": "^3.0.1",
         "croner": "^9.1.0",
         "drizzle-orm": "^0.44.7",
-        "signum-chain-walker": "^1.0.7",
+        "signum-chain-walker": "^1.0.8",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -1039,7 +1039,7 @@
 
     "signal-exit": ["signal-exit@4.1.0", "", {}, "sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw=="],
 
-    "signum-chain-walker": ["signum-chain-walker@1.0.7", "", { "dependencies": { "@signumjs/core": "^2.0.10", "@signumjs/util": "^2.0.10", "fs-extra": "^11.1.0", "p-retry": "^4.6.2", "pino": "^8.14.1", "pino-pretty": "^10.0.0", "toad-scheduler": "^2.3.0" } }, "sha512-Ki1WIlPl/Q5a6IPA3oe98KUpnZ2pHtq8FfTAr0/DfiGPzQ5JmOzuYqb4KFe3zjmyk9DLh6iRXRv8GC62XAE/pQ=="],
+    "signum-chain-walker": ["signum-chain-walker@1.0.8", "", { "dependencies": { "@signumjs/core": "^2.0.10", "@signumjs/util": "^2.0.10", "fs-extra": "^11.1.0", "p-retry": "^4.6.2", "pino": "^8.14.1", "pino-pretty": "^10.0.0", "toad-scheduler": "^2.3.0" } }, "sha512-9LoNBKULUyCp8dTkDsJtGORBvfMX5iAKblCkPLBirahB3dOq9khNQVNhtim6LTldWRMR5VanE5JpU+Qw2ujYwA=="],
 
     "slash": ["slash@3.0.0", "", {}, "sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q=="],
 

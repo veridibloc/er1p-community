@@ -8,6 +8,13 @@
       "when": 1762665785344,
       "tag": "0000_white_alex_power",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1762710216828,
+      "tag": "0001_pretty_supreme_intelligence",
+      "breakpoints": true
     }
   ]
 }

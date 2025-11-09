@@ -1,6 +1,11 @@
 import {CheckpointPassedEvent} from "@er1p/event-ledger";
 import {checkpointPassages, type NewCheckpointPassage} from "../schema";
 import {db} from "../client.ts";
+import {
+    updateLiveLeaderboardOnCheckpoint,
+    markLiveLeaderboardFinished,
+    markLiveLeaderboardDisqualifiedOrDNF
+} from "./liveLeaderboards";
 
 /**
  * Efficiently upserts a checkpoint passage event.
@@ -11,7 +16,7 @@ import {db} from "../client.ts";
  *
  * This is atomic and handles both pending→confirmed transitions and direct inserts.
  */
-export async function upsertCheckpointPassages(event: CheckpointPassedEvent, isPending: boolean = false) {
+export async function upsertCheckpointPassages(event: CheckpointPassedEvent, shallUpdateLeaderBoard: boolean, isPending: boolean = false) {
     try {
         const tx = event.tx!;
         const raceId = tx.sender;
@@ -56,6 +61,26 @@ export async function upsertCheckpointPassages(event: CheckpointPassedEvent, isP
                     reason: passage.reason,
                 }
             });
+
+        if (shallUpdateLeaderBoard) {
+            // Update leaderboard for this participant only (efficient - just 2 queries)
+            await updateLiveLeaderboardOnCheckpoint(
+                raceId,
+                participantId,
+                payload.checkpointId,
+                payload.dateTime,
+                isPending
+            );
+
+            // Check if participant finished (passed checkpoint 'f')
+            if (payload.checkpointId === 'f' && payload.action === 'continue') {
+                await markLiveLeaderboardFinished(raceId, participantId);
+            }
+
+            if (payload.action === 'give_up' || payload.action === 'disqualified') {
+                await markLiveLeaderboardDisqualifiedOrDNF(raceId, participantId, payload.action, payload.reason ?? "No reason provided");
+            }
+        }
     } catch (e: any) {
         console.error(`Error upserting checkpoint passage [txId: ${event.tx!.transaction}]`, e.message);
     }

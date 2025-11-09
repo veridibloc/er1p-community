@@ -2,6 +2,10 @@ import {ParticipantConfirmedEvent, ParticipantDisqualifiedEvent} from "@er1p/eve
 import {participantEvents, type NewParticipantEvent} from "../schema";
 import {db} from "../client.ts";
 import {ChainTime} from "@signumjs/util";
+import {
+    upsertLiveLeaderboardParticipant,
+    markLiveLeaderboardDisqualifiedOrDNF
+} from "./liveLeaderboards";
 
 /**
  * Efficiently upserts a participant event (inserts or updates based on transaction ID).
@@ -45,6 +49,28 @@ export async function upsertParticipantEvent(event: ParticipantDisqualifiedEvent
                     isPending: isPending ? 1 : 0,
                 }
             });
+
+        // Update live leaderboard (only for confirmed events)
+        if (!isPending) {
+            if (isConfirmed) {
+                // Get participant name if available (from account lookup or elsewhere)
+                // For now, we'll use null and update it later if needed
+                await upsertLiveLeaderboardParticipant(
+                    raceId,
+                    participantId,
+                    null, // participantName - could be enhanced
+                    bib
+                );
+            } else {
+                // Participant disqualified
+                await markLiveLeaderboardDisqualifiedOrDNF(
+                    raceId,
+                    participantId,
+                    'disqualified',
+                    reason || 'No reason provided'
+                );
+            }
+        }
     } catch (e: any) {
         console.error(`Error upserting participant event [txId: ${event.tx!.transaction}]`, e.message);
     }

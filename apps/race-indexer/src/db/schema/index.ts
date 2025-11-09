@@ -1,5 +1,5 @@
 import {sql} from "drizzle-orm";
-import {text, integer, sqliteTable, real} from "drizzle-orm/sqlite-core";
+import {text, integer, sqliteTable, real, index} from "drizzle-orm/sqlite-core";
 
 /**
  * Races table - stores information about indexed races from the blockchain
@@ -155,3 +155,114 @@ export type NewParticipantEvent = typeof participantEvents.$inferInsert;
 
 export type CheckpointPassage = typeof checkpointPassages.$inferSelect;
 export type NewCheckpointPassage = typeof checkpointPassages.$inferInsert;
+
+/**
+ * Live races - tracks currently active races
+ * Races are added when race_started event occurs
+ * Races are removed when race_ended or race_cancelled events occur
+ */
+export const liveRaces = sqliteTable("live_races", {
+    raceId: text("race_id").primaryKey()
+        .references(() => races.id),
+
+    // Race metadata for quick access
+    name: text("name").notNull(),
+    dateTime: integer("date_time", {mode: "timestamp"}).notNull(),
+
+    // Status tracking
+    status: text("status", {enum: ["active", "paused"]}).notNull().default("active"),
+    startedAt: integer("started_at", {mode: "timestamp"}).notNull(),
+    lastActivityAt: integer("last_activity_at", {mode: "timestamp"}).notNull(),
+
+    // Quick stats
+    participantCount: integer("participant_count").notNull().default(0),
+    totalCheckpoints: integer("total_checkpoints").notNull().default(0),
+});
+
+/**
+ * Live leaderboards - materialized leaderboard for active races
+ * Includes ALL checkpoint passages (pending + confirmed) for live preview
+ * Recalculated when new checkpoints arrive
+ * Cleared when race ends (data moves to historical_leaderboards)
+ */
+export const liveLeaderboards = sqliteTable("live_leaderboards", {
+    id: text("id").primaryKey(), // raceId-participantId
+    raceId: text("race_id").notNull()
+        .references(() => liveRaces.raceId),
+
+    // Participant info
+    participantId: text("participant_id").notNull(),
+    participantName: text("participant_name"),
+    bib: text("bib"),
+
+    // Last checkpoint info
+    lastCheckpointTime: integer("last_checkpoint_time", {mode: "timestamp"}),
+    lastCheckpointId: text("last_checkpoint_id"), // Track which checkpoint they're at
+
+    // Performance metrics (calculated from start checkpoint 's')
+    raceDurationSeconds: integer("race_duration_seconds"), // Time from start to last checkpoint
+    paceSecondsPerKm: real("pace_seconds_per_km"), // Average pace in seconds per kilometer
+
+    // Status
+    status: text("status", {enum: ["racing", "finished", "dnf", "disqualified"]}).notNull().default("racing"),
+    reason: text("reason"),
+
+    updatedAt: integer("updated_at", {mode: "timestamp"}).notNull(),
+}, (table) => ({
+    // Index for querying and sorting leaderboard by race
+    raceIdDurationIdx: index("live_leaderboards_race_duration_idx")
+        .on(table.raceId, table.raceDurationSeconds),
+    // Index for looking up specific participant
+    participantIdx: index("live_leaderboards_participant_idx")
+        .on(table.participantId),
+}));
+
+/**
+ * Historical leaderboards - final leaderboard snapshot when race ends
+ * Permanent record of race results
+ */
+export const historicalLeaderboards = sqliteTable("historical_leaderboards", {
+    id: text("id").primaryKey(), // raceId-participantId
+    raceId: text("race_id").notNull()
+        .references(() => races.id),
+
+    // Participant info
+    participantId: text("participant_id").notNull(),
+    participantName: text("participant_name"),
+    bib: text("bib"),
+
+    // Final stats
+    checkpointsCompleted: integer("checkpoints_completed").notNull(),
+    lastCheckpointTime: integer("last_checkpoint_time", {mode: "timestamp"}),
+
+    // Performance metrics
+    raceDurationSeconds: integer("race_duration_seconds"), // Total time from race start to last checkpoint
+    paceSecondsPerKm: real("pace_seconds_per_km"), // Average pace in seconds per kilometer
+
+    // Final ranking (only for finishers who passed checkpoint 'f')
+    finalRank: integer("final_rank"), // null for DNF/disqualified
+
+    // Status
+    status: text("status", {enum: ["finished", "dnf", "disqualified"]}).notNull(),
+
+    // Metadata
+    raceEndedAt: integer("race_ended_at", {mode: "timestamp"}).notNull(),
+    createdAt: integer("created_at", {mode: "timestamp"}).notNull()
+        .default(sql`(unixepoch())`),
+}, (table) => ({
+    // Index for querying historical results by race
+    raceIdRankIdx: index("historical_leaderboards_race_rank_idx")
+        .on(table.raceId, table.finalRank),
+    // Index for looking up specific participant
+    participantIdx: index("historical_leaderboards_participant_idx")
+        .on(table.participantId),
+}));
+
+export type LiveRace = typeof liveRaces.$inferSelect;
+export type NewLiveRace = typeof liveRaces.$inferInsert;
+
+export type LiveLeaderboard = typeof liveLeaderboards.$inferSelect;
+export type NewLiveLeaderboard = typeof liveLeaderboards.$inferInsert;
+
+export type HistoricalLeaderboard = typeof historicalLeaderboards.$inferSelect;
+export type NewHistoricalLeaderboard = typeof historicalLeaderboards.$inferInsert;

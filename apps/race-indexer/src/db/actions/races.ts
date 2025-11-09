@@ -5,6 +5,12 @@ import {
 import {db} from "../client.ts";
 import {checkpoints, raceFlowEvents, type NewCheckpoint, type NewRace, type NewRaceFlowEvent, races} from "../schema";
 import {eq} from "drizzle-orm";
+import {
+    startLiveRace,
+    pauseLiveRace,
+    resumeLiveRace,
+    finalizeLiveRace
+} from "./liveRaces";
 
 export async function insertRace(raceCreatedEvent: RaceCreatedEvent) {
     try {
@@ -90,6 +96,25 @@ export async function upsertRaceFlow(event: RaceFlowEvent, isPending: boolean = 
                     isPending: isPending ? 1 : 0,
                 }
             });
+
+        // Handle live race tracking (only for confirmed events)
+        if (!isPending) {
+            switch (event.name) {
+                case "race_started":
+                    await startLiveRace(raceId, event.payload.dateTime);
+                    break;
+                case "race_stopped":
+                    await pauseLiveRace(raceId);
+                    break;
+                case "race_resumed":
+                    await resumeLiveRace(raceId);
+                    break;
+                case "race_ended":
+                case "race_cancelled":
+                    await finalizeLiveRace(raceId, event.payload.dateTime);
+                    break;
+            }
+        }
     } catch (e: any) {
         console.error(`Error upserting race flow event [txId: ${event.tx!.transaction}]`, e.message);
     }
