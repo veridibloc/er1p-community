@@ -14,7 +14,7 @@ import { Amount } from "@signumjs/util";
 import { HttpError } from "@signumjs/http";
 import { LedgerEventRegistry } from "./events/ledger-event-registry";
 import { AbstractLedgerEvent } from "./events/abstract-ledger-event";
-import type { LedgerEvent } from "./types";
+import type { LedgerEvent } from "./ledger-event.types";
 import type { EventName } from "./event-name";
 
 interface FetchPendingEventsArgs {
