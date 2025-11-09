@@ -1,6 +1,5 @@
 import {CheckpointPassedEvent} from "@er1p/event-ledger";
-import {checkpointPassages, type NewCheckpointPassage} from "../schema";
-import {db} from "../client.ts";
+import {db, checkpointPassages, type NewCheckpointPassage} from "@er1p/race-indexer-db";
 import {
     updateLiveLeaderboardOnCheckpoint,
     markLiveLeaderboardFinished,

@@ -1,11 +1,11 @@
 import {eq, and, sql, asc} from "drizzle-orm";
-import {db} from "../client";
 import {
+    db,
     liveLeaderboards,
     checkpointPassages,
     checkpoints,
     type NewLiveLeaderboard,
-} from "../schema";
+} from "@er1p/race-indexer-db";
 import {isRaceLive, updateLiveRaceActivity} from "./liveRaces";
 import {string} from "valibot";
 

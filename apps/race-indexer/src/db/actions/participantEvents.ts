@@ -1,6 +1,5 @@
 import {ParticipantConfirmedEvent, ParticipantDisqualifiedEvent} from "@er1p/event-ledger";
-import {participantEvents, type NewParticipantEvent} from "../schema";
-import {db} from "../client.ts";
+import {db, participantEvents, type NewParticipantEvent} from "@er1p/race-indexer-db";
 import {ChainTime} from "@signumjs/util";
 import {
     upsertLiveLeaderboardParticipant,

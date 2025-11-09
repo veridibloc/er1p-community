@@ -2,8 +2,7 @@ import {
     RaceCreatedEvent,
     type RaceFlowEvent
 } from "@er1p/event-ledger";
-import {db} from "../client.ts";
-import {checkpoints, raceFlowEvents, type NewCheckpoint, type NewRace, type NewRaceFlowEvent, races} from "../schema";
+import {db, checkpoints, raceFlowEvents, type NewCheckpoint, type NewRace, type NewRaceFlowEvent, races} from "@er1p/race-indexer-db";
 import {eq} from "drizzle-orm";
 import {
     startLiveRace,

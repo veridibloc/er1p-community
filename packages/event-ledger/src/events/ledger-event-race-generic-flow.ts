@@ -16,7 +16,7 @@ interface RaceGenericFlowPayload {
   reason?: string;
 }
 
-abstract class BaseRaceFlowEvent extends AbstractLedgerEvent<RaceGenericFlowPayload> {
+export abstract class BaseRaceFlowEvent extends AbstractLedgerEvent<RaceGenericFlowPayload> {
   constructor(
     name: string,
     version: number,
@@ -120,12 +120,12 @@ export function createRaceFlowEvent(
   type: RaceFlowEventNames,
   payload: RaceGenericFlowPayload,
   tx?: Transaction,
-) {
+): BaseRaceFlowEvent {
   const EventClass = createRaceFlowEventClass(type);
   return new EventClass(payload, tx);
 }
 
-export type RaceFlowEvent = ReturnType<typeof createRaceFlowEvent>;
+export type RaceFlowEvent = BaseRaceFlowEvent;
 
 Object.values(RaceFlowEventNames).forEach((name) => {
   const EventClass = createRaceFlowEventClass(name);

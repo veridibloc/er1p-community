@@ -1,6 +1,6 @@
 import { eq, and, sql } from "drizzle-orm";
-import { db } from "../client";
 import {
+  db,
   liveRaces,
   liveLeaderboards,
   historicalLeaderboards,
@@ -10,7 +10,7 @@ import {
   type NewLiveRace,
   type NewLiveLeaderboard,
   type NewHistoricalLeaderboard,
-} from "../schema";
+} from "@er1p/race-indexer-db";
 
 /**
  * Start tracking a race as live
