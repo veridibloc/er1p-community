@@ -1,0 +1,50 @@
+# Systemd service file for race-indexer
+# Alternative to PM2 for those who prefer systemd
+#
+# Installation:
+#   1. Edit this file and update paths
+#   2. sudo cp race-indexer.service /etc/systemd/system/
+#   3. sudo systemctl daemon-reload
+#   4. sudo systemctl enable race-indexer
+#   5. sudo systemctl start race-indexer
+#
+# Usage:
+#   sudo systemctl status race-indexer
+#   sudo systemctl restart race-indexer
+#   sudo journalctl -u race-indexer -f
+
+[Unit]
+Description=ER1P Race Indexer
+After=network.target
+
+[Service]
+Type=simple
+User=your-username
+WorkingDirectory=/home/your-username/er1p-community/apps/race-indexer
+ExecStart=/home/your-username/.bun/bin/bun run index.ts
+
+# Environment variables (or use EnvironmentFile=/path/to/.env)
+Environment="DATABASE_URL=file:local.db"
+Environment="NODE_HOST=http://localhost:6876"
+Environment="START_BLOCK=800000"
+Environment="VERBOSE=false"
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=200
+StartLimitBurst=5
+
+# Logging
+StandardOutput=append:/var/log/race-indexer/output.log
+StandardError=append:/var/log/race-indexer/error.log
+
+# Security hardening (optional)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/your-username/er1p-community/apps/race-indexer
+
+[Install]
+WantedBy=multi-user.target

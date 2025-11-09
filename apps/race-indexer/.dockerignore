@@ -1,0 +1,15 @@
+node_modules
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+race-indexer.cache.json
+README.md
+.cursor
+.idea
+.DS_Store
+*.log

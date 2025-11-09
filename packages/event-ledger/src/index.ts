@@ -2,6 +2,7 @@
 export type { LedgerEvent, SerializableLedgerEvent } from "./ledger-event.types.ts";
 export type { Race } from "./race.types.ts";
 export { AbstractLedgerEvent } from "./events/abstract-ledger-event.ts";
+export { LedgerEventRegistry } from "./events/ledger-event-registry.ts";
 export { EventLedger, EventLedgerError } from "./event-ledger";
 export { EventName } from "./event-name";
 

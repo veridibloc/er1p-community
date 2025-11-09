@@ -1,8 +1,8 @@
 import { LedgerEventRegistry } from "./ledger-event-registry";
 import type { Transaction } from "@signumjs/core";
-import type { LedgerEvent, SerializableLedgerEvent } from "../types";
 import { src44 } from "@signumjs/standards";
 import { EventName } from "../event-name";
+import type {LedgerEvent, SerializableLedgerEvent} from "../ledger-event.types.ts";
 
 export class LedgerEventParseError extends Error {
   constructor(

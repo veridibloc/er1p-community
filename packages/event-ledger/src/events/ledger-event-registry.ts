@@ -1,5 +1,5 @@
-import type { LedgerEventConstructor, LedgerEvent } from "../types";
 import type { EventName } from "../event-name";
+import type {LedgerEvent, LedgerEventConstructor} from "../ledger-event.types.ts";
 
 /**
  * A singleton class responsible for managing the registry of ledger event types.

@@ -1,0 +1,77 @@
+# Docker Compose configuration for race-indexer
+# Useful for running the indexer in a containerized environment
+#
+# Usage:
+#   docker-compose up -d        # Start in background
+#   docker-compose logs -f      # View logs
+#   docker-compose down         # Stop
+#   docker-compose restart      # Restart
+
+version: '3.8'
+
+services:
+  race-indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: race-indexer
+    restart: unless-stopped
+
+    environment:
+      # Option 1: Local SQLite (data persisted in volume)
+      - DATABASE_URL=file:/data/local.db
+
+      # Option 2: Turso Cloud (uncomment and fill in)
+      # - DATABASE_URL=libsql://your-database.turso.io
+      # - DATABASE_AUTH_TOKEN=your-auth-token
+
+      - NODE_HOST=http://host.docker.internal:6876  # For local Signum node
+      # - NODE_HOST=http://signum-node:6876        # If running node in Docker
+      - START_BLOCK=800000
+      - VERBOSE=false
+
+    volumes:
+      # Persist database if using local SQLite
+      - ./data:/data
+      # Persist cache file
+      - ./race-indexer.cache.json:/app/race-indexer.cache.json
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "bun", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Resource limits (adjust as needed)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # Optional: Run Signum node in same stack
+  # signum-node:
+  #   image: signumnetwork/node:latest
+  #   container_name: signum-node
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6876:6876"
+  #   volumes:
+  #     - signum-data:/signum/data
+  #   environment:
+  #     - JAVA_OPTS=-Xmx2g
+
+# volumes:
+#   signum-data:

@@ -14,8 +14,9 @@
   "dependencies": {
     "@signumjs/core": "^2.0.8",
     "@signumjs/crypto": "^2.0.8",
+    "@signumjs/standards": "^2.0.8",
     "@signumjs/util": "^2.0.8",
-    "@signumjs/standards": "^2.0.8"
+    "valibot": "^1.1.0"
   },
   "devDependencies": {
     "@er1p/typescript-config": "workspace:*",

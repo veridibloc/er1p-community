@@ -1,0 +1,38 @@
+# Fly.io configuration for race-indexer
+app = "race-indexer"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Set in fly secrets instead: DATABASE_URL, DATABASE_AUTH_TOKEN, NODE_HOST
+  START_BLOCK = "800000"
+  VERBOSE = "false"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3000
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+[checks]
+  [checks.alive]
+    type = "tcp"
+    interval = "15s"
+    timeout = "10s"
+
+# Restart policy
+[restart]
+  policy = "always"
+
+# Resources
+[compute]
+  size = "shared-cpu-1x"
+  memory = "256mb"

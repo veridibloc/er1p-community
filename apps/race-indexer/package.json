@@ -3,14 +3,33 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun run index.ts",
+    "start": "bun run index.ts",
+    "build": "bun build ./index.ts --compile --outfile race-indexer",
+    "build:linux": "bun build ./index.ts --compile --target=bun-linux-x64 --outfile race-indexer-linux",
+    "build:windows": "bun build ./index.ts --compile --target=bun-windows-x64 --outfile race-indexer-windows.exe",
+    "build:macos": "bun build ./index.ts --compile --target=bun-darwin-x64 --outfile race-indexer-macos",
+    "build:all": "bun run build:linux && bun run build:windows && bun run build:macos",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:drop": "drizzle-kit drop"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.31.6"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "signum-chain-walker": "^1.0.7",
-    "@er1p/event-ledger": "*"
+    "@er1p/event-ledger": "*",
+    "@libsql/client": "^0.15.15",
+    "@signumjs/core": "2",
+    "@signumjs/util": "^3.0.1",
+    "drizzle-orm": "^0.44.7",
+    "signum-chain-walker": "^1.0.7"
   }
 }
