@@ -316,6 +316,17 @@ chmod +x race-indexer-linux
 
 Make sure all imports in your code use relative paths and don't rely on dynamic imports that can't be resolved at compile time.
 
+### "Could not resolve: croner" error
+
+If you see an error like `error: Could not resolve: "croner"`, this is because `toad-scheduler` (used by `signum-chain-walker`) has a peer dependency on `croner`.
+
+**Fix:** Install croner as a dependency:
+```bash
+bun add croner
+```
+
+This is already included in the package.json, but if you encounter this error after updating dependencies, reinstall croner.
+
 ### Binary doesn't run
 
 Check you're using the correct binary for your platform:
