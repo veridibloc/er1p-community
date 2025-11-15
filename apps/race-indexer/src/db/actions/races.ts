@@ -1,8 +1,8 @@
 import {
     RaceCreatedEvent,
     type RaceFlowEvent
-} from "@er1p/event-ledger";
-import {checkpoints, raceFlowEvents, type NewCheckpoint, type NewRace, type NewRaceFlowEvent, races} from "@er1p/race-indexer-db";
+} from "@er1p-community/event-ledger";
+import {checkpoints, raceFlowEvents, type NewCheckpoint, type NewRace, type NewRaceFlowEvent, races} from "@er1p-community/race-indexer-db";
 import {eq} from "drizzle-orm";
 import {
     startLiveRace,

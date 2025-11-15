@@ -1,4 +1,4 @@
-import {EventLedger} from "@er1p/event-ledger";
+import {EventLedger} from "@er1p-community/event-ledger";
 
 export type RaceIndexerContext = {
     eventLedger: EventLedger;

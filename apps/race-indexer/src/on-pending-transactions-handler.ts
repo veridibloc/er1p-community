@@ -5,7 +5,7 @@ import {
     CheckpointPassedEvent,
     LedgerEventRegistry, ParticipantConfirmedEvent, ParticipantDisqualifiedEvent,
     RaceFlowEventNames
-} from "@er1p/event-ledger";
+} from "@er1p-community/event-ledger";
 import {upsertCheckpointPassages} from "./db/actions/checkpointPassages.ts";
 import {upsertParticipantEvent} from "./db/actions/participantEvents.ts";
 import {upsertRaceFlow} from "./db/actions/races.ts";

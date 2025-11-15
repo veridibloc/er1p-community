@@ -1,6 +1,6 @@
 {
-  "name": "@er1p/race-indexer-db",
-  "version": "0.1.6",
+  "name": "@er1p-community/race-indexer-db",
+  "version": "0.1.8",
   "description": "Database schema and client for ER1P race indexer",
   "type": "module",
   "main": "./dist/index.js",
@@ -8,9 +8,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [
@@ -48,7 +53,7 @@
     "drizzle-orm": "^0.36.4"
   },
   "devDependencies": {
-    "@er1p/typescript-config": "workspace:*",
+    "@er1p-community/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.0.0",
     "drizzle-kit": "^0.31.6"

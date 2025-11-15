@@ -2,7 +2,7 @@ import {ChainWalker} from "signum-chain-walker";
 import {Config} from "./config.ts";
 import {onPendingTransactionHandler} from "./on-pending-transactions-handler.ts";
 import {onTransactionHandler} from "./on-transaction-handler.ts";
-import {EventLedger} from "@er1p/event-ledger";
+import {EventLedger} from "@er1p-community/event-ledger";
 import type {RaceIndexerContext} from "./types.ts";
 
 

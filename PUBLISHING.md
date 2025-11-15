@@ -4,8 +4,8 @@ This guide explains how to publish packages from the ER1P Community monorepo usi
 
 ## Published Packages
 
-- `@er1p/event-ledger` - Event ledger functionality for ER1P blockchain interactions
-- `@er1p/race-indexer-db` - Database schema and client for ER1P race indexer
+- `@er1p-community/event-ledger` - Event ledger functionality for ER1P blockchain interactions
+- `@er1p-community/race-indexer-db` - Database schema and client for ER1P race indexer
 
 ## Workflow
 
@@ -29,7 +29,7 @@ The changeset will be saved as a markdown file in `.changeset/`.
 When you're ready to release, update package versions based on changesets:
 
 ```bash
-bun run version-packages
+bun run changeset-version
 ```
 
 This will:

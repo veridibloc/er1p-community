@@ -1,5 +1,5 @@
-import {CheckpointPassedEvent} from "@er1p/event-ledger";
-import {checkpointPassages, type NewCheckpointPassage} from "@er1p/race-indexer-db";
+import {CheckpointPassedEvent} from "@er1p-community/event-ledger";
+import {checkpointPassages, type NewCheckpointPassage} from "@er1p-community/race-indexer-db";
 import {dbClient as db} from "../dbClient.ts";
 
 import {

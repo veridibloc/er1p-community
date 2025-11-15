@@ -4,7 +4,7 @@ import {
     checkpointPassages,
     checkpoints,
     type NewLiveLeaderboard,
-} from "@er1p/race-indexer-db";
+} from "@er1p-community/race-indexer-db";
 import {isRaceLive, updateLiveRaceActivity} from "./liveRaces";
 import {dbClient as db} from "../dbClient.ts";
 /**

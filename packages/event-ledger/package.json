@@ -1,16 +1,22 @@
 {
-  "name": "@er1p/event-ledger",
-  "version": "0.1.0",
+  "name": "@er1p-community/event-ledger",
+  "version": "0.1.4",
   "description": "Isomorphic event ledger functionality for ER1P blockchain interactions",
   "type": "module",
+  "private": "false",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [
@@ -52,7 +58,7 @@
     "@signumjs/crypto": "^2.0.8",
     "@signumjs/standards": "^2.0.8",
     "@signumjs/util": "^2.0.8",
-    "@er1p/typescript-config": "workspace:*",
+    "@er1p-community/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.0.0"
   }

@@ -6,7 +6,7 @@ import {
   races,
   type NewLiveRace,
   type NewHistoricalLeaderboard,
-} from "@er1p/race-indexer-db";
+} from "@er1p-community/race-indexer-db";
 import { dbClient as db } from "../dbClient.ts";
 /**
  * Start tracking a race as live
