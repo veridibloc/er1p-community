@@ -42,7 +42,7 @@
     "signum",
     "smartcontracts"
   ],
-  "author": "ER1P Community",
+  "author": "ohager",
   "license": "MIT",
   "dependencies": {
     "valibot": "^1.1.0"
@@ -61,5 +61,15 @@
     "@er1p-community/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.0.0"
+  },
+  "turbo": {
+    "tasks": {
+      "build": {
+        "outputs": ["dist/**"]
+      }
+    }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

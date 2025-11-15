@@ -6,6 +6,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "private": "false",
   "exports": {
     ".": {
       "import": {
@@ -46,7 +47,7 @@
     "libsql",
     "sqlite"
   ],
-  "author": "ER1P Community",
+  "author": "ohager",
   "license": "MIT",
   "dependencies": {
     "@libsql/client": "^0.14.0",
@@ -57,5 +58,15 @@
     "tsup": "^8.5.0",
     "typescript": "^5.0.0",
     "drizzle-kit": "^0.31.6"
+  },
+  "turbo": {
+    "tasks": {
+      "build": {
+        "outputs": ["dist/**"]
+      }
+    }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
