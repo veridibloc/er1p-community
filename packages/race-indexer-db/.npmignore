@@ -5,3 +5,5 @@ tsconfig.build.json
 *.spec.ts
 .turbo
 node_modules
+drizzle.config.ts
+.env*

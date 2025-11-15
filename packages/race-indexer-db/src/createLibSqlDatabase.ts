@@ -69,5 +69,5 @@ export type RaceIndexerDatabase = LibSQLDatabase<typeof schema> & { $client: Lib
 
 export const createLibSqlDatabase = (cfg: DbClientConfig):
     RaceIndexerDatabase => {
-    return drizzle(createLibSqlClient(cfg));
+    return drizzle(createLibSqlClient(cfg), {schema});
 };

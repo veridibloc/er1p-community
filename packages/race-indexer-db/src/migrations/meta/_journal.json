@@ -15,6 +15,20 @@
       "when": 1762710216828,
       "tag": "0001_pretty_supreme_intelligence",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1763180900050,
+      "tag": "0002_special_molecule_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1763181365745,
+      "tag": "0003_broken_living_tribunal",
+      "breakpoints": true
     }
   ]
 }

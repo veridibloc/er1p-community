@@ -1,6 +1,6 @@
 {
   "name": "@er1p/race-indexer-db",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "Database schema and client for ER1P race indexer",
   "type": "module",
   "main": "./dist/index.js",
@@ -20,7 +20,12 @@
   "scripts": {
     "build": "tsup",
     "clean": "rm -rf dist",
-    "prepublishOnly": "bun run clean && bun run build"
+    "prepublishOnly": "bun run clean && bun run build",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:drop": "drizzle-kit drop"
   },
   "repository": {
     "type": "git",
@@ -45,6 +50,7 @@
   "devDependencies": {
     "@er1p/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "drizzle-kit": "^0.31.6"
   }
 }

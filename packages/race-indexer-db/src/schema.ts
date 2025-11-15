@@ -62,7 +62,10 @@ export const checkpoints = sqliteTable("checkpoints", {
 
     // Ordering within the race
     orderIndex: integer("order_index").notNull(),
-});
+}, (table) => ({
+    // Unique constraint for raceId + checkpointId combination
+    uniqueRaceCheckpoint: index("unique_race_checkpoint_idx").on(table.raceId, table.checkpointId),
+}));
 
 /**
  * Race flow events - stores the history of race state changes
@@ -72,9 +75,7 @@ export const checkpoints = sqliteTable("checkpoints", {
 export const raceFlowEvents = sqliteTable("race_flow_events", {
     id: text("id").primaryKey(), // Transaction ID
     isPending: integer("is_pending").notNull().default(0),
-    raceId: text("race_id")
-        .notNull()
-        .references(() => races.id),
+    raceId: text("race_id").notNull(), // No FK constraint - events may arrive before race
 
     eventType: text("event_type", {
         enum: ["race_started", "race_stopped", "race_resumed", "race_cancelled", "race_ended"]
@@ -84,7 +85,10 @@ export const raceFlowEvents = sqliteTable("race_flow_events", {
     indexedAt: integer("indexed_at", {mode: "timestamp"})
         .notNull()
         .default(sql`(unixepoch())`),
-});
+}, (table) => ({
+    // Index for efficient lookups
+    raceIdIdx: index("race_flow_events_race_id_idx").on(table.raceId),
+}));
 
 /**
  * Participant events - stores the history of participant-related events
@@ -95,9 +99,7 @@ export const participantEvents = sqliteTable("participant_events", {
     id: text("id").primaryKey(), // Transaction ID
     isPending: integer("is_pending").notNull().default(0),
     dateTime: integer("date_time", {mode: "timestamp"}).notNull(),
-    raceId: text("race_id")
-        .notNull()
-        .references(() => races.id),
+    raceId: text("race_id").notNull(), // No FK constraint - events may arrive before race
     participantId: text("participant_id").notNull(), // Blockchain account ID
 
     eventType: text("event_type", {enum: ["confirmed", "disqualified"]})
@@ -108,7 +110,11 @@ export const participantEvents = sqliteTable("participant_events", {
     indexedAt: integer("indexed_at", {mode: "timestamp"})
         .notNull()
         .default(sql`(unixepoch())`),
-});
+}, (table) => ({
+    // Index for efficient lookups
+    raceIdIdx: index("participant_events_race_id_idx").on(table.raceId),
+    participantIdIdx: index("participant_events_participant_id_idx").on(table.participantId),
+}));
 
 /**
  * Checkpoint passages - records when participants pass checkpoints
@@ -116,12 +122,8 @@ export const participantEvents = sqliteTable("participant_events", {
 export const checkpointPassages = sqliteTable("checkpoint_passages", {
     id: text("id").primaryKey(), // transaction ids
     isPending: integer("is_pending").notNull().default(0),
-    raceId: text("race_id")
-        .notNull()
-        .references(() => races.id),
-    checkpointId: text("checkpoint_id")
-        .notNull()
-        .references(() => checkpoints.id),
+    raceId: text("race_id").notNull(), // No FK constraint - events may arrive before race
+    checkpointId: text("checkpoint_id").notNull(), // References checkpoints via (raceId, checkpointId)
     participantId: text("participant_id").notNull(),
     passedAt: integer("passed_at", {mode: "timestamp"}).notNull(),
     weatherTemperature: integer("weather_temperature"),
@@ -138,7 +140,13 @@ export const checkpointPassages = sqliteTable("checkpoint_passages", {
         .notNull()
         .default(sql`(unixepoch()
                      )`),
-});
+}, (table) => ({
+    // Indexes for efficient lookups
+    raceCheckpointIdx: index("checkpoint_passages_race_checkpoint_idx")
+        .on(table.raceId, table.checkpointId),
+    participantIdIdx: index("checkpoint_passages_participant_id_idx")
+        .on(table.participantId),
+}));
 
 // Export types for use in the application
 export type Race = typeof races.$inferSelect;
@@ -308,8 +316,8 @@ export const checkpointPassagesRelations = relations(checkpointPassages, ({one})
         references: [races.id],
     }),
     checkpoint: one(checkpoints, {
-        fields: [checkpointPassages.checkpointId],
-        references: [checkpoints.id],
+        fields: [checkpointPassages.raceId, checkpointPassages.checkpointId],
+        references: [checkpoints.raceId, checkpoints.checkpointId],
     }),
 }));
 
