@@ -1,6 +1,6 @@
 {
   "name": "@er1p/race-indexer-db",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Database schema and client for ER1P race indexer",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,7 +10,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -18,8 +18,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm --sourcemap=external && bun run build:types",
-    "build:types": "tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "prepublishOnly": "bun run clean && bun run build"
   },

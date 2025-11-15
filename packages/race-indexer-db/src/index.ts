@@ -2,4 +2,5 @@
 export * from "./schema.ts";
 
 // Re-export database client
-export * from "./client.ts";
+export * from "./createLibSqlDatabase.ts";
+

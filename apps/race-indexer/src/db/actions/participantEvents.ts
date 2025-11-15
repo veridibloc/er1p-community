@@ -1,10 +1,11 @@
 import {ParticipantConfirmedEvent, ParticipantDisqualifiedEvent} from "@er1p/event-ledger";
-import {db, participantEvents, type NewParticipantEvent} from "@er1p/race-indexer-db";
+import {participantEvents, type NewParticipantEvent} from "@er1p/race-indexer-db";
 import {ChainTime} from "@signumjs/util";
 import {
     upsertLiveLeaderboardParticipant,
     markLiveLeaderboardDisqualifiedOrDNF
 } from "./liveLeaderboards";
+import {dbClient as db} from "../dbClient.ts";
 
 /**
  * Efficiently upserts a participant event (inserts or updates based on transaction ID).

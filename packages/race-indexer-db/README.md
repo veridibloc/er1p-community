@@ -27,7 +27,9 @@ bun add @er1p/race-indexer-db
 ### Import the database client
 
 ```typescript
-import { db } from "@er1p/race-indexer-db";
+import { createLibSqlDatabase } from "@er1p/race-indexer-db";
+
+const db = createLibSqlDatabase({ url: process.env.DATABASE_URL, authToken: process.env.DATABASE_AUTH_TOKEN});
 
 // Use the db client for queries
 const races = await db.select().from(races);
@@ -48,7 +50,10 @@ import {
 
 ## Environment Configuration
 
-The database client requires the following environment variables:
+It's recommended to use a separate `.env` file for database configuration.
+The client requires `url` and optional `authToken` (for Turso Cloud databases) 
+
+Here some possible environment variables:
 
 - `DATABASE_URL`: Database connection string
   - Local file: `file:local.db`

@@ -1,17 +1,13 @@
-import { eq, and, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import {
-  db,
   liveRaces,
   liveLeaderboards,
   historicalLeaderboards,
   races,
-  participantEvents,
-  checkpointPassages,
   type NewLiveRace,
-  type NewLiveLeaderboard,
   type NewHistoricalLeaderboard,
 } from "@er1p/race-indexer-db";
-
+import { dbClient as db } from "../dbClient.ts";
 /**
  * Start tracking a race as live
  * Called when race_started event is processed
@@ -189,13 +185,6 @@ export async function updateLiveRaceActivity(raceId: string) {
     .update(liveRaces)
     .set({ lastActivityAt: new Date() })
     .where(eq(liveRaces.raceId, raceId));
-}
-
-/**
- * Get all currently live races
- */
-export async function getLiveRaces() {
-  return db.select().from(liveRaces);
 }
 
 /**

@@ -1,14 +1,12 @@
 import {eq, and, sql, asc} from "drizzle-orm";
 import {
-    db,
     liveLeaderboards,
     checkpointPassages,
     checkpoints,
     type NewLiveLeaderboard,
 } from "@er1p/race-indexer-db";
 import {isRaceLive, updateLiveRaceActivity} from "./liveRaces";
-import {string} from "valibot";
-
+import {dbClient as db} from "../dbClient.ts";
 /**
  * Add or update a participant in the live leaderboard
  * Called when a participant is confirmed for a live race

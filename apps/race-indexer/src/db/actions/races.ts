@@ -2,7 +2,7 @@ import {
     RaceCreatedEvent,
     type RaceFlowEvent
 } from "@er1p/event-ledger";
-import {db, checkpoints, raceFlowEvents, type NewCheckpoint, type NewRace, type NewRaceFlowEvent, races} from "@er1p/race-indexer-db";
+import {checkpoints, raceFlowEvents, type NewCheckpoint, type NewRace, type NewRaceFlowEvent, races} from "@er1p/race-indexer-db";
 import {eq} from "drizzle-orm";
 import {
     startLiveRace,
@@ -10,6 +10,7 @@ import {
     resumeLiveRace,
     finalizeLiveRace
 } from "./liveRaces";
+import {dbClient as db} from "../dbClient.ts";
 
 export async function insertRace(raceCreatedEvent: RaceCreatedEvent) {
     try {

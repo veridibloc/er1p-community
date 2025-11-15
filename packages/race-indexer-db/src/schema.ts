@@ -1,4 +1,4 @@
-import {sql} from "drizzle-orm";
+import {sql, relations} from "drizzle-orm";
 import {text, integer, sqliteTable, real, index} from "drizzle-orm/sqlite-core";
 
 /**
@@ -266,3 +266,71 @@ export type NewLiveLeaderboard = typeof liveLeaderboards.$inferInsert;
 
 export type HistoricalLeaderboard = typeof historicalLeaderboards.$inferSelect;
 export type NewHistoricalLeaderboard = typeof historicalLeaderboards.$inferInsert;
+
+// Relations
+export const racesRelations = relations(races, ({many, one}) => ({
+    checkpoints: many(checkpoints),
+    raceFlowEvents: many(raceFlowEvents),
+    participantEvents: many(participantEvents),
+    checkpointPassages: many(checkpointPassages),
+    liveRace: one(liveRaces, {
+        fields: [races.id],
+        references: [liveRaces.raceId],
+    }),
+    historicalLeaderboards: many(historicalLeaderboards),
+}));
+
+export const checkpointsRelations = relations(checkpoints, ({one, many}) => ({
+    race: one(races, {
+        fields: [checkpoints.raceId],
+        references: [races.id],
+    }),
+    checkpointPassages: many(checkpointPassages),
+}));
+
+export const raceFlowEventsRelations = relations(raceFlowEvents, ({one}) => ({
+    race: one(races, {
+        fields: [raceFlowEvents.raceId],
+        references: [races.id],
+    }),
+}));
+
+export const participantEventsRelations = relations(participantEvents, ({one}) => ({
+    race: one(races, {
+        fields: [participantEvents.raceId],
+        references: [races.id],
+    }),
+}));
+
+export const checkpointPassagesRelations = relations(checkpointPassages, ({one}) => ({
+    race: one(races, {
+        fields: [checkpointPassages.raceId],
+        references: [races.id],
+    }),
+    checkpoint: one(checkpoints, {
+        fields: [checkpointPassages.checkpointId],
+        references: [checkpoints.id],
+    }),
+}));
+
+export const liveRacesRelations = relations(liveRaces, ({one, many}) => ({
+    race: one(races, {
+        fields: [liveRaces.raceId],
+        references: [races.id],
+    }),
+    liveLeaderboards: many(liveLeaderboards),
+}));
+
+export const liveLeaderboardsRelations = relations(liveLeaderboards, ({one}) => ({
+    liveRace: one(liveRaces, {
+        fields: [liveLeaderboards.raceId],
+        references: [liveRaces.raceId],
+    }),
+}));
+
+export const historicalLeaderboardsRelations = relations(historicalLeaderboards, ({one}) => ({
+    race: one(races, {
+        fields: [historicalLeaderboards.raceId],
+        references: [races.id],
+    }),
+}));

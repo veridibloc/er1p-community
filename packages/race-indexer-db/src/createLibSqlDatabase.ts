@@ -1,5 +1,10 @@
-import { createClient, type Client } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import { createClient, type Client as LibSqlClient } from "@libsql/client";
+import {drizzle, LibSQLDatabase} from "drizzle-orm/libsql";
+import * as schema from "./schema"
+export type DbClientConfig = {
+    url: string;
+    authToken?: string;
+}
 
 /**
  * Creates a libSQL client based on environment configuration.
@@ -10,34 +15,32 @@ import { drizzle } from "drizzle-orm/libsql";
  * - Local server: DATABASE_URL=http://127.0.0.1:8080
  * - Turso Cloud: DATABASE_URL=libsql://your-db.turso.io + DATABASE_AUTH_TOKEN=your-token
  */
-export function createDbClient(): Client {
-  const databaseUrl = process.env.DATABASE_URL;
-  const authToken = process.env.DATABASE_AUTH_TOKEN;
+function createLibSqlClient({url, authToken}: DbClientConfig): LibSqlClient {
 
-  if (!databaseUrl) {
+  if (!url) {
     throw new Error(
       "DATABASE_URL is required. Set it to a local file (file:local.db) or Turso Cloud URL (libsql://...)",
     );
   }
 
   // Detect connection type
-  const isLocalFile = databaseUrl.startsWith("file:");
+  const isLocalFile = url.startsWith("file:");
   const isLocalServer =
-    databaseUrl.startsWith("http://127.0.0.1") ||
-    databaseUrl.startsWith("http://localhost");
-  const isTursoCloud = databaseUrl.startsWith("libsql://");
+    url.startsWith("http://127.0.0.1") ||
+    url.startsWith("http://localhost");
+  const isTursoCloud = url.startsWith("libsql://");
 
   if (isLocalFile) {
-    console.log("📁 Using local SQLite file:", databaseUrl);
+    console.log("📁 Using local SQLite file:", url);
     return createClient({
-      url: databaseUrl,
+      url: url,
     });
   }
 
   if (isLocalServer) {
-    console.log("🔌 Using local libSQL server:", databaseUrl);
+    console.log("🔌 Using local libSQL server:", url);
     return createClient({
-      url: databaseUrl,
+      url: url,
     });
   }
 
@@ -47,9 +50,9 @@ export function createDbClient(): Client {
         "DATABASE_AUTH_TOKEN is required for Turso Cloud connections",
       );
     }
-    console.log("☁️  Using Turso Cloud:", databaseUrl);
+    console.log("☁️  Using Turso Cloud:", url);
     return createClient({
-      url: databaseUrl,
+      url: url,
       authToken,
     });
   }
@@ -57,10 +60,14 @@ export function createDbClient(): Client {
   // Fallback: try to connect anyway
   console.warn("⚠️  Unknown database URL format, attempting connection...");
   return createClient({
-    url: databaseUrl,
+    url: url,
     authToken: authToken,
   });
 }
 
-// Create and export the database client
-export const db = drizzle(createDbClient());
+export type RaceIndexerDatabase = LibSQLDatabase<typeof schema> & { $client: LibSqlClient };
+
+export const createLibSqlDatabase = (cfg: DbClientConfig):
+    RaceIndexerDatabase => {
+    return drizzle(createLibSqlClient(cfg));
+};
