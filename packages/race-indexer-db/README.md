@@ -9,30 +9,96 @@ This package provides the shared database schema and client configuration for th
 ## Features
 
 - Complete database schema for races, checkpoints, participants, and leaderboards
-- Pre-configured libSQL client with support for:
-  - Local SQLite files
-  - Local libSQL servers
-  - Turso Cloud databases
+- Drizzle ORM integration with typed schema
+- Support for libSQL (SQLite/Turso) databases
 - TypeScript types for all database entities
+- Environment-agnostic (works on Vercel, Edge, Node.js, etc.)
 - Zero runtime overhead for type-only imports
 
 ## Installation
 
 ```bash
-bun add @er1p/race-indexer-db
+bun add @er1p-community/race-indexer-db @libsql/client drizzle-orm
+```
+
+> **Note:** `@libsql/client` and `drizzle-orm` are peer dependencies. You must install them in your project.
+
+### Additional for Node.js environments
+
+If deploying to Node.js environments (like Vercel Node.js runtime), also install:
+
+```bash
+bun add ws
 ```
 
 ## Usage
 
-### Import the database client
+### Basic Setup
 
 ```typescript
-import { createLibSqlDatabase } from "@er1p/race-indexer-db";
+import { createClient } from '@libsql/client';
+import { createDatabase } from '@er1p-community/race-indexer-db';
 
-const db = createLibSqlDatabase({ url: process.env.DATABASE_URL, authToken: process.env.DATABASE_AUTH_TOKEN});
+// Create the libSQL client
+const client = createClient({
+  url: process.env.DATABASE_URL!,
+  authToken: process.env.DATABASE_AUTH_TOKEN
+});
+
+// Create the database instance with typed schema
+const db = createDatabase(client);
 
 // Use the db client for queries
-const races = await db.select().from(races);
+const allRaces = await db.query.races.findMany();
+```
+
+### Environment-Specific Examples
+
+#### Local Development
+
+```typescript
+import { createClient } from '@libsql/client';
+import { createDatabase } from '@er1p-community/race-indexer-db';
+
+const client = createClient({ url: 'file:local.db' });
+const db = createDatabase(client);
+```
+
+#### Vercel / Production (Turso Cloud)
+
+```typescript
+import { createClient } from '@libsql/client';
+import { createDatabase } from '@er1p-community/race-indexer-db';
+
+const client = createClient({
+  url: process.env.DATABASE_URL!, // e.g., libsql://your-db.turso.io
+  authToken: process.env.DATABASE_AUTH_TOKEN
+});
+const db = createDatabase(client);
+```
+
+#### Vercel Edge Runtime
+
+```typescript
+import { createClient } from '@libsql/client/web';
+import { createDatabase } from '@er1p-community/race-indexer-db';
+
+const client = createClient({
+  url: process.env.DATABASE_URL!,
+  authToken: process.env.DATABASE_AUTH_TOKEN
+});
+const db = createDatabase(client);
+```
+
+### Using with TypeScript
+
+```typescript
+import type { Database } from '@er1p-community/race-indexer-db';
+
+// Use Database type for function parameters
+function queryRaces(db: Database) {
+  return db.query.races.findMany();
+}
 ```
 
 ### Import schema tables and types
@@ -45,15 +111,12 @@ import {
   type Race,
   type Checkpoint,
   type LiveLeaderboard
-} from "@er1p/race-indexer-db";
+} from '@er1p-community/race-indexer-db';
 ```
 
 ## Environment Configuration
 
-It's recommended to use a separate `.env` file for database configuration.
-The client requires `url` and optional `authToken` (for Turso Cloud databases) 
-
-Here some possible environment variables:
+Configure your database connection using environment variables:
 
 - `DATABASE_URL`: Database connection string
   - Local file: `file:local.db`

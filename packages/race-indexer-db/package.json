@@ -50,8 +50,16 @@
   "author": "ohager",
   "license": "MIT",
   "peerDependencies": {
-    "@libsql/client": "^0.15.15",
-    "drizzle-orm": "^0.44.7"
+    "@libsql/client": ">=0.15.0",
+    "drizzle-orm": ">=0.44.0"
+  },
+  "peerDependenciesMeta": {
+    "@libsql/client": {
+      "optional": false
+    },
+    "drizzle-orm": {
+      "optional": false
+    }
   },
   "devDependencies": {
     "@er1p-community/typescript-config": "workspace:*",
