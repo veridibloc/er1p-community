@@ -2,4 +2,4 @@
 export * from "./schema.ts";
 
 // Re-export database helper and types
-export * from "./createLibSqlDatabase.ts";
+export * from "./createDatabase.ts";
