@@ -1,5 +1,11 @@
 # @er1p-community/race-indexer-db
 
+## 0.1.9
+
+### Patch Changes
+
+- made drizzle and libsql peer deps
+
 ## 0.1.8
 
 ### Patch Changes

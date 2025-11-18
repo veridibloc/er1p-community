@@ -1,6 +1,6 @@
 {
   "name": "@er1p-community/race-indexer-db",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Database schema and client for ER1P race indexer",
   "type": "module",
   "main": "./dist/index.js",
@@ -49,20 +49,24 @@
   ],
   "author": "ohager",
   "license": "MIT",
-  "dependencies": {
-    "@libsql/client": "^0.14.0",
-    "drizzle-orm": "^0.36.4"
+  "peerDependencies": {
+    "@libsql/client": "^0.15.15",
+    "drizzle-orm": "^0.44.7"
   },
   "devDependencies": {
     "@er1p-community/typescript-config": "workspace:*",
     "tsup": "^8.5.0",
     "typescript": "^5.0.0",
-    "drizzle-kit": "^0.31.6"
+    "drizzle-kit": "^0.31.6",
+    "@libsql/client": "^0.15.15",
+    "drizzle-orm": "^0.44.7"
   },
   "turbo": {
     "tasks": {
       "build": {
-        "outputs": ["dist/**"]
+        "outputs": [
+          "dist/**"
+        ]
       }
     }
   },

@@ -10,4 +10,5 @@ export default defineConfig({
     treeshake: true,
     platform: "node",
     outDir: "dist",
+    external: ["@libsql/client", "drizzle-orm"]
 });
