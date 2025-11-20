@@ -1,3 +1,7 @@
 {
-  "extends": "../../packages/typescript-config/bun.json"
+  "extends": "../../packages/typescript-config/bun.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "lib": ["ES2022", "DOM"]
+  }
 }

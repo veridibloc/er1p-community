@@ -5,7 +5,8 @@ export default defineConfig({
     format: ["esm", "cjs"],
     dts: {
         compilerOptions: {
-            types: []
+            types: [],
+            lib: ["ES2022", "DOM"]
         }
     },
     sourcemap: true,
