@@ -8,8 +8,8 @@ export function Navbar() {
             <div className="container mx-auto px-4 py-4">
                 <div className="flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <Logo  priority />
-                        <div>
+                        <Logo  priority className={"sm:h-14 sm:w-14 h-10 w-10"} />
+                        <div className="hidden sm:block">
                             <div className="font-bold text-xl text-foreground">
                                 ER1P <span className="text-primary">Race Radar</span>
                             </div>
