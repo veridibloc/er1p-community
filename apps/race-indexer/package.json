@@ -33,5 +33,12 @@
     "@signumjs/util": "^3.0.1",
     "croner": "^9.1.0",
     "signum-chain-walker": "^1.0.8"
+  },
+  "turbo": {
+    "tasks": {
+      "build": {
+        "outputs": ["dist/**"]
+      }
+    }
   }
 }

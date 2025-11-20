@@ -74,5 +74,12 @@
     "turbo": "^2.5.4",
     "tw-animate-css": "1.3.3",
     "typescript": "5.9.2"
+  },
+  "turbo": {
+    "tasks": {
+      "build": {
+        "outputs": [".next/**", "!.next/cache/**"]
+      }
+    }
   }
 }
