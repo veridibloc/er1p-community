@@ -267,13 +267,132 @@ bun run db:push
 - Check that your database exists: `turso db list`
 - Ensure you're authenticated: `turso auth login`
 
+## Building Your Own Indexer
+
+The race-indexer is designed to be extended for custom race protocols:
+
+### Custom Event Types
+
+Add support for new blockchain event types:
+
+```typescript
+// Define custom event in event-ledger package
+export class CustomRaceEvent extends AbstractLedgerEvent {
+  // ... your event implementation
+}
+
+// Register it in the indexer
+LedgerEventRegistry.getInstance().register(
+  CustomRaceEvent,
+  new EventName("custom_event", 1)
+);
+```
+
+### Adding Custom Processing Logic
+
+Extend the indexer to handle special race logic:
+
+```typescript
+// src/processors/customProcessor.ts
+export async function processCustomEvent(
+  event: CustomRaceEvent,
+  db: Database
+) {
+  // Your custom database operations
+}
+```
+
+### Monitoring & Observability
+
+Add logging, metrics, or alerting:
+
+```typescript
+// Enable verbose logging
+VERBOSE=true bun run start
+
+// Or implement custom monitoring hooks
+```
+
+## Advanced Configuration
+
+### Multiple Blockchain Nodes
+
+Configure fallback nodes for reliability:
+
+```typescript
+// config.ts
+const nodes = [
+  "https://primary-node.com",
+  "https://backup-node.com"
+];
+```
+
+### Partial Sync
+
+Index only specific block ranges:
+
+```bash
+START_BLOCK=1000000 bun run start
+# Indexer will process from block 1000000 onwards
+```
+
+### Database Optimization
+
+For high-volume indexing:
+
+- Use Turso Cloud with replicas
+- Enable connection pooling
+- Configure batch inserts for better performance
+
 ## Contributing
 
-Contributions are welcome! Please ensure:
+We welcome contributions! Here's how you can help:
 
-- All database operations use the Drizzle ORM
-- Schema changes include migration generation
-- Code follows the project's TypeScript conventions
+### Bug Reports
+
+Found an issue? [Open a GitHub issue](https://github.com/veridibloc/er1p-community/issues) with:
+- Description of the problem
+- Steps to reproduce
+- Expected vs. actual behavior
+- Indexer logs (if applicable)
+
+### Feature Requests
+
+Want a new feature? [Start a discussion](https://github.com/veridibloc/er1p-community/discussions) or open an issue describing:
+- The feature you'd like
+- Why it would be useful
+- Your use case
+
+### Pull Requests
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/my-indexer-feature`
+3. **Make your changes**
+4. **Test thoroughly**:
+   - Run typecheck: `bun run typecheck`
+   - Test with local database
+   - Verify indexing works correctly
+5. **Build**: `bun run build`
+6. **Commit**: `git commit -m "feat: add new feature"`
+7. **Push and create a PR**
+
+### Development Guidelines
+
+- **Database Operations**: Always use Drizzle ORM (no raw SQL)
+- **Schema Changes**: Generate migrations with `bun run db:generate`
+- **Error Handling**: Catch and log blockchain errors gracefully
+- **TypeScript**: Ensure all code is type-safe
+- **Testing**: Test with both local and cloud databases
+- **Documentation**: Update README for API changes
+
+### Areas We Need Help With
+
+- 🔍 **Performance Optimization** - Faster blockchain scanning
+- 🧪 **Testing** - Unit and integration tests
+- 📊 **Metrics** - Prometheus/Grafana integration
+- 🔄 **Resilience** - Better error recovery and retry logic
+- 📚 **Documentation** - More examples and guides
+- 🐳 **Docker Support** - Containerization
 
 ## License
 

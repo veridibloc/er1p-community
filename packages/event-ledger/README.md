@@ -343,6 +343,245 @@ This package requires:
 
 MIT
 
+## Building Custom Event Systems
+
+The event-ledger is designed to be extended for custom blockchain applications beyond racing:
+
+### Example: Supply Chain Events
+
+```typescript
+import { AbstractLedgerEvent, EventName } from '@er1p-community/event-ledger';
+import * as v from 'valibot';
+
+interface ShipmentPayload {
+  trackingId: string;
+  origin: string;
+  destination: string;
+  timestamp: Date;
+}
+
+const ShipmentSchema = v.object({
+  trackingId: v.pipe(v.string(), v.nonEmpty()),
+  origin: v.string(),
+  destination: v.string(),
+  timestamp: v.date()
+});
+
+export class ShipmentEvent extends AbstractLedgerEvent<ShipmentPayload> {
+  static readonly Name = "shipment_created";
+  static readonly Version = 1;
+
+  constructor(payload: ShipmentPayload, tx?: Transaction) {
+    super(ShipmentEvent.Name, ShipmentEvent.Version, payload, tx);
+  }
+
+  validate(): string[] {
+    try {
+      v.parse(ShipmentSchema, this.payload);
+      return [];
+    } catch (error) {
+      if (error instanceof v.ValiError) {
+        return error.issues.map(i => i.message);
+      }
+      return [error.message];
+    }
+  }
+
+  // ... implement descriptorImpl and fromTransaction
+}
+```
+
+### Example: NFT Minting Events
+
+```typescript
+interface NFTMintPayload {
+  tokenId: string;
+  metadata: {
+    name: string;
+    image: string;
+    attributes: Record<string, any>;
+  };
+}
+
+export class NFTMintEvent extends AbstractLedgerEvent<NFTMintPayload> {
+  // ... implementation
+}
+```
+
+## Advanced Usage
+
+### Batch Event Dispatching
+
+Dispatch multiple events efficiently:
+
+```typescript
+const events = [event1, event2, event3];
+
+for (const event of events) {
+  await eventLedger.dispatch({
+    event,
+    senderKeys,
+    recipientPublicKey
+  });
+}
+```
+
+### Event Filtering
+
+Fetch events with complex filters:
+
+```typescript
+// Get events in specific block range
+const eventsInRange = await eventLedger.fetchEvents({
+  recipientId: "12345678901234567890",
+  startBlockHeight: 1000000,
+  endBlockHeight: 1001000,
+  eventNames: [
+    new EventName("race_created", 1),
+    new EventName("race_started", 1)
+  ]
+});
+
+// Paginate through large result sets
+const firstPage = await eventLedger.fetchEvents({
+  senderId: "12345678901234567890",
+  firstIndex: 0,
+  lastIndex: 100
+});
+
+const secondPage = await eventLedger.fetchEvents({
+  senderId: "12345678901234567890",
+  firstIndex: 100,
+  lastIndex: 200
+});
+```
+
+### Working with Pending Events
+
+Monitor unconfirmed transactions:
+
+```typescript
+// Fetch pending events
+const pending = await eventLedger.fetchPendingEvents({
+  recipientId: "12345678901234567890"
+});
+
+// Wait for confirmation
+const checkConfirmation = async (txId: string) => {
+  // Poll until transaction is confirmed
+  while (true) {
+    const confirmed = await eventLedger.fetchEvents({
+      // Filter by transaction ID
+    });
+    if (confirmed.length > 0) break;
+    await new Promise(resolve => setTimeout(resolve, 5000));
+  }
+};
+```
+
 ## Contributing
 
-Contributions are welcome! Please ensure all tests pass and code follows the project's style guidelines.
+We welcome contributions! Whether you're fixing bugs, adding new event types, or improving documentation, here's how to get involved:
+
+### Bug Reports
+
+Found a bug? [Open an issue](https://github.com/veridibloc/er1p-community/issues) with:
+- Description of the issue
+- Code snippet that reproduces the problem
+- Expected vs. actual behavior
+- Blockchain transaction IDs (if applicable)
+
+### Feature Requests
+
+Have an idea? [Start a discussion](https://github.com/veridibloc/er1p-community/discussions) or open an issue describing:
+- The feature you'd like
+- Your use case
+- How it fits with the existing API
+
+### Pull Requests
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/new-event-type`
+3. **Make your changes**:
+   - Add new event types in `src/events/`
+   - Update exports in `src/index.ts`
+   - Add tests if applicable
+4. **Ensure code quality**:
+   - Run type checking: `bun run typecheck`
+   - Test with real blockchain (testnet)
+   - Validate events work end-to-end
+5. **Update documentation**:
+   - Add examples to README
+   - Document new event types
+   - Update JSDoc comments
+6. **Commit**: `git commit -m "feat: add new event type"`
+7. **Push and create a PR**
+
+### Development Guidelines
+
+- **Event Validation**: All events must have Valibot schemas
+- **Backward Compatibility**: Don't break existing event formats
+- **SRC44 Compliance**: Follow Signum standards for descriptors
+- **TypeScript**: Maintain 100% type safety
+- **Testing**: Test on Signum testnet before mainnet
+- **Documentation**: Document all public APIs with JSDoc
+- **Error Handling**: Use `EventLedgerError` for blockchain errors
+
+### Areas We Need Help With
+
+- 🧪 **Testing** - Unit and integration tests for all event types
+- 📚 **Documentation** - More examples and tutorials
+- 🚀 **Event Types** - New built-in event types for common use cases
+- ⚡ **Performance** - Batch dispatch optimization
+- 🔍 **Event Indexing** - Better filtering and search capabilities
+- 🌐 **Multi-chain Support** - Support for other Signum-compatible chains
+- 📦 **Validation** - Enhanced schema validation helpers
+
+### Adding New Built-in Events
+
+To add a new built-in event type:
+
+1. Create event class in `src/events/` (e.g., `myEvent.ts`)
+2. Implement `AbstractLedgerEvent` interface
+3. Add Valibot schema for validation
+4. Register in `src/events/index.ts`
+5. Export from `src/index.ts`
+6. Add example to README
+7. Test thoroughly
+
+## Publishing
+
+This package is published to npm as `@er1p-community/event-ledger`.
+
+To publish a new version:
+
+```bash
+# Update version in package.json
+# Build the package
+bun run build
+
+# Publish (maintainers only)
+npm publish
+```
+
+## Testing
+
+### Unit Tests
+
+```bash
+bun test
+```
+
+### Integration Testing on Testnet
+
+```typescript
+import { LedgerClientFactory } from '@signumjs/core';
+
+// Use Signum testnet
+const ledger = LedgerClientFactory.createClient({
+  nodeHost: 'https://testnet.signum.network'
+});
+
+const eventLedger = new EventLedger(ledger);
+// Test your events on testnet before mainnet
+```

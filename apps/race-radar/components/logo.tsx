@@ -36,7 +36,7 @@ const sizeMap: Record<LogoSize, number> = {
  */
 export function Logo({size = "md", className, priority = false}: LogoProps) {
     const pixelSize = sizeMap[size];
-    const {theme} = useTheme()
+    const {resolvedTheme} = useTheme()
     const [mounted, setMounted] = useState(false)
 
     // Prevent hydration mismatch by only rendering theme-dependent content after mount
@@ -44,7 +44,7 @@ export function Logo({size = "md", className, priority = false}: LogoProps) {
         setMounted(true)
     }, [])
 
-    const isDark = mounted && theme === "dark"
+    const isDark = mounted && resolvedTheme === "dark"
 
     return (
         <Image
