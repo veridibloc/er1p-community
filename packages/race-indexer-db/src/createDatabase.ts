@@ -2,6 +2,26 @@ import type { Client as LibSqlClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema.ts"
 
+
+function _createDatabase(client: LibSqlClient) {
+  return drizzle(client, { schema });
+}
+
+/**
+ * Type representing the database instance returned by createDatabase.
+ * Use this for type annotations in your application.
+ *
+ * @example
+ * ```typescript
+ * import type { Database } from '@er1p-community/race-indexer-db';
+ *
+ * function queryRaces(db: Database) {
+ *   return db.query.races.findMany();
+ * }
+ * ```
+ */
+export type Database = ReturnType<typeof _createDatabase>;
+
 /**
  * Creates a Drizzle database instance with the race indexer schema.
  *
@@ -25,21 +45,4 @@ import * as schema from "./schema.ts"
  * const db = createDatabase(client);
  * ```
  */
-export function createDatabase(client: LibSqlClient) {
-  return drizzle(client, { schema });
-}
-
-/**
- * Type representing the database instance returned by createDatabase.
- * Use this for type annotations in your application.
- *
- * @example
- * ```typescript
- * import type { Database } from '@er1p-community/race-indexer-db';
- *
- * function queryRaces(db: Database) {
- *   return db.query.races.findMany();
- * }
- * ```
- */
-export type Database = ReturnType<typeof createDatabase>;
+export function createDatabase(client: LibSqlClient) : Database { return _createDatabase(client); }

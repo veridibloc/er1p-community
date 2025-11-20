@@ -1,3 +1,6 @@
 {
-  "extends": "../typescript-config/bun.json"
+  "extends": "../typescript-config/bun.json",
+  "compilerOptions": {
+    "skipLibCheck": true
+  }
 }

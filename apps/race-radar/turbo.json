@@ -1,0 +1,25 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "TURSO_DATABASE_URL",
+        "TURSO_DATABASE_AUTH_TOKEN",
+        "NEXT_PUBLIC_SIGNUM_NODE_HOST",
+        "NEXT_PUBLIC_SIGNUM_EXPLORER",
+        "NEXT_PUBLIC_IS_TESTNET",
+        "NEXT_PUBLIC_DID_RESOLVER"
+      ]
+    },
+    "dev": {
+      "env": [
+        "TURSO_DATABASE_URL",
+        "TURSO_DATABASE_AUTH_TOKEN",
+        "NEXT_PUBLIC_SIGNUM_NODE_HOST",
+        "NEXT_PUBLIC_SIGNUM_EXPLORER",
+        "NEXT_PUBLIC_IS_TESTNET",
+        "NEXT_PUBLIC_DID_RESOLVER"
+      ]
+    }
+  }
+}
