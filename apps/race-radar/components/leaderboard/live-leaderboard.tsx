@@ -7,6 +7,7 @@ import {type LiveLeaderboard as LiveLeaderboardType} from "@er1p-community/race-
 import {LeaderboardTableHeader} from "./leaderboard-table-header";
 import {formatDuration, getPositionClasses, isPodiumPosition} from "./types";
 import useSWR from "swr";
+import {fetchLiveLeaderboard} from "@/app/race/[id]/_components/actions.ts";
 
 interface LiveLeaderboardProps {
     /**
@@ -16,22 +17,18 @@ interface LiveLeaderboardProps {
     raceId: string;
 }
 
-// const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function LiveLeaderboard({initialLeaderboard, raceId}: LiveLeaderboardProps) {
 
-    // const {data: leaderboard = initialLeaderboard} = useSWR<LiveLeaderboardType[]>(
-    //     `/api/race/${raceId}/leaderboard`,
-    //     fetcher,
-    //     {
-    //         fallbackData: initialLeaderboard,
-    //         refreshInterval: 10 * 1000, // Poll every 10 seconds
-    //         revalidateOnFocus: false,
-    //         revalidateOnReconnect: true,
-    //     }
-    // );
-
-    const leaderboard = initialLeaderboard;
+    const {data: leaderboard = initialLeaderboard} = useSWR<LiveLeaderboardType[]>(
+        `live-leader-board-${raceId}`, () =>fetchLiveLeaderboard(raceId),
+        {
+            fallbackData: initialLeaderboard,
+            refreshInterval: 10 * 1000, // Poll every 10 seconds
+            revalidateOnFocus: false,
+            revalidateOnReconnect: true,
+        }
+    );
 
     return (
         <Card>
