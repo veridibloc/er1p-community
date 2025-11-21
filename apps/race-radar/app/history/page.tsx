@@ -1,7 +1,7 @@
 import {Trophy} from "lucide-react"
-import {Navbar} from "@/components/navbar"
 import {History} from "@/app/history/_components/history";
 import {fetchAllRaces, fetchAllRaceStats} from "./actions"
+import {PageContent} from "@/components/page-content.tsx";
 
 
 export default async function HistoryPage() {
@@ -11,8 +11,7 @@ export default async function HistoryPage() {
     ])
 
     return (
-        <div className="min-h-screen bg-background">
-            <Navbar/>
+        <PageContent>
 
             {/* Hero Section */}
             <section className="relative overflow-hidden border-b border-border">
@@ -48,7 +47,8 @@ export default async function HistoryPage() {
                             <div className="text-center">
                                 <div className="text-3xl font-bold text-foreground">
                                     {stats.totalFinishers}
-                                    <span className="ml-4 text-sm text-muted-foreground">{(stats.totalFinishers/stats.participantCount) * 100}%</span>
+                                    <span
+                                        className="ml-4 text-sm text-muted-foreground">{(stats.totalFinishers / stats.participantCount) * 100}%</span>
                                 </div>
                                 <div className="text-sm text-muted-foreground">Total Finishers</div>
                             </div>
@@ -59,6 +59,6 @@ export default async function HistoryPage() {
 
             {/* Historical Races */}
             <History races={races}/>
-        </div>
+        </PageContent>
     )
 }

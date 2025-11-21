@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { Search, User } from "lucide-react"
-import { Navbar } from "@/components/navbar"
 import { Input } from "@/components/ui/input"
 import { RunnerCard } from "@/components/runner-card"
 import { getAllRunners } from "@/lib/mock-data"
+import {PageContent} from "@/components/page-content.tsx";
 
 export default function RunnersPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -21,8 +21,7 @@ export default function RunnersPage() {
   })
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+<PageContent>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border">
@@ -84,6 +83,6 @@ export default function RunnersPage() {
           )}
         </div>
       </section>
-    </div>
+    </PageContent>
   )
 }

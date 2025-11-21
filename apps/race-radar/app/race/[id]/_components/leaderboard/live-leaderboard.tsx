@@ -7,7 +7,7 @@ import {type LiveLeaderboard as LiveLeaderboardType} from "@er1p-community/race-
 import {LeaderboardTableHeader} from "./leaderboard-table-header";
 import {formatDuration, getPositionClasses, isPodiumPosition} from "./types";
 import useSWR from "swr";
-import {fetchLiveLeaderboard} from "@/app/race/[id]/_components/actions.ts";
+import {fetchLiveLeaderboard} from "../actions.ts";
 
 interface LiveLeaderboardProps {
     /**

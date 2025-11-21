@@ -25,16 +25,16 @@ export function Navbar() {
                             Live Races
                         </Link>
                         <Link
-                            href="/runners"
-                            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            Runners
-                        </Link>
-                        <Link
                             href="/history"
                             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                         >
                             History
+                        </Link>
+                        <Link
+                            href="/runners"
+                            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            Runners
                         </Link>
                         <div className="ml-2">
                             <ThemeSwitcher/>

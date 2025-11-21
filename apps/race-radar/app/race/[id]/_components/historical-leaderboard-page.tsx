@@ -1,4 +1,4 @@
-import {HistoricalLeaderboard} from "@/components/leaderboard";
+import {HistoricalLeaderboard} from "./leaderboard/historical-leaderboard";
 import {fetchHistoricalLeaderboard} from "./actions.ts";
 
 /*

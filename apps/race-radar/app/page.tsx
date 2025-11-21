@@ -2,20 +2,18 @@ import {
     Activity,
     Users,
     Shield,
-    TrendingUp,
     FootprintsIcon,
     ActivityIcon,
-    UsersIcon,
     TimerIcon,
     MountainSnowIcon
 } from "lucide-react"
-import {Navbar} from "@/components/navbar"
 import {StatsCard} from "@/components/stats-card"
 
 import {fetchLiveRaces, fetchOverallRaceStats} from "./actions"
 import {LiveRaceCard} from "@/components/live-race-card.tsx";
 import {formatTime} from "@/lib/format-time.ts";
 import {cn} from "@/lib/utils.ts";
+import {PageContent} from "@/components/page-content.tsx";
 
 export default async function HomePage() {
     const [liveRaces, raceStats] = await Promise.all([
@@ -31,9 +29,7 @@ export default async function HomePage() {
     const totalTime = raceStats.totalTrackedTimeSeconds
 
     return (
-        <div className="min-h-screen bg-background">
-            <Navbar/>
-
+        <PageContent>
             {/* Hero Section */}
             <section className="relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/10"/>
@@ -126,6 +122,6 @@ export default async function HomePage() {
                     </div>
                 )}
             </section>
-        </div>
+        </PageContent>
     )
 }

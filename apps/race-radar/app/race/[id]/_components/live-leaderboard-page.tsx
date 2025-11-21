@@ -1,4 +1,4 @@
-import {LiveLeaderboard} from "@/components/leaderboard";
+import {LiveLeaderboard} from "./leaderboard/live-leaderboard";
 import {fetchLiveLeaderboard} from "./actions"
 
 interface Props {

@@ -1,6 +1,5 @@
 import {notFound} from "next/navigation"
 import {Calendar, Users, MapPin, Shield, TrendingUp} from "lucide-react"
-import {Navbar} from "@/components/navbar"
 import {LiveIndicator} from "@/components/live-indicator"
 import {CheckpointTimeline} from "@/components/checkpoint-timeline"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
@@ -8,7 +7,8 @@ import {formatDistanceToNow} from "date-fns"
 import {LiveLeaderboardPage} from "./_components/live-leaderboard-page.tsx";
 import {HistoricalLeaderboardPage} from "./_components/historical-leaderboard-page.tsx";
 import {getAccountDid} from "@/lib/did.ts";
-import {fetchRace}  from "./_components/actions.ts"
+import {fetchRace} from "./_components/actions.ts"
+import {PageContent} from "@/components/page-content.tsx";
 
 const ExplorerUrl = process.env.NEXT_PUBLIC_SIGNUM_EXPLORER
 const DidResolverUrl = process.env.NEXT_PUBLIC_DID_RESOLVER
@@ -26,11 +26,10 @@ export default async function RaceDetailPage({
 
     const raceFlowEvent = race.raceFlowEvents[0] ? race.raceFlowEvents[0] : null
     const isLive = raceFlowEvent?.eventType !== 'race_cancelled' && raceFlowEvent?.eventType !== 'race_ended'
-    const particicpantCount = race.participantEvents.filter(event  => event.eventType === 'confirmed').length
-    const checkpointCount =  race.checkpoints.length
+    const particicpantCount = race.participantEvents.filter(event => event.eventType === 'confirmed').length
+    const checkpointCount = race.checkpoints.length
     return (
-        <div className="min-h-screen bg-background">
-            <Navbar/>
+        <PageContent>
 
             {/* Race Header */}
             <section className="relative overflow-hidden border-b border-border">
@@ -87,8 +86,8 @@ export default async function RaceDetailPage({
                                 </h2>
                             </div>
                             {isLive
-                                ? <LiveLeaderboardPage raceId={race.id} />
-                                : <HistoricalLeaderboardPage raceId={race.id} />
+                                ? <LiveLeaderboardPage raceId={race.id}/>
+                                : <HistoricalLeaderboardPage raceId={race.id}/>
                             }
                         </div>
 
@@ -121,14 +120,16 @@ export default async function RaceDetailPage({
                                         <div className="text-xs text-muted-foreground mb-1">Race Account</div>
                                         <div
                                             className="font-mono text-xs text-foreground bg-muted px-2 py-1 rounded break-all">
-                                            <a href={ExplorerUrl + `/address/${race.id}`} target="_blank" rel="noopener noreferrer">{race.id}</a>
+                                            <a href={ExplorerUrl + `/address/${race.id}`} target="_blank"
+                                               rel="noopener noreferrer">{race.id}</a>
                                         </div>
                                     </div>
                                     <div>
                                         <div className="text-xs text-muted-foreground mb-1">W3C DID</div>
                                         <div
                                             className="font-mono text-xs text-foreground bg-muted px-2 py-1 rounded break-all">
-                                            <a href={DidResolverUrl + `/${getAccountDid(race.id)}`} target="_blank" rel="noopener noreferrer">{getAccountDid(race.id)}</a>
+                                            <a href={DidResolverUrl + `/${getAccountDid(race.id)}`} target="_blank"
+                                               rel="noopener noreferrer">{getAccountDid(race.id)}</a>
                                         </div>
                                     </div>
                                     <div>
@@ -141,6 +142,6 @@ export default async function RaceDetailPage({
                     </div>
                 </div>
             </div>
-        </div>
+        </PageContent>
     )
 }
