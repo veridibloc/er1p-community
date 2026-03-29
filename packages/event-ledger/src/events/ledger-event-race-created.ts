@@ -1,6 +1,5 @@
 import {AbstractLedgerEvent} from "./abstract-ledger-event";
 import {
-    AttachmentMessage,
     type Ledger,
     type Transaction,
     type TransactionId,

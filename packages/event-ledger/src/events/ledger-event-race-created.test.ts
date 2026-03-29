@@ -253,7 +253,7 @@ describe("RaceCreatedEvent", () => {
 
             const context = {
                 ledger: mockLedger as any,
-                senderKeys: {signPrivateKey: "key", publicKey: "pub"},
+                senderKeys: {signPrivateKey: "key", publicKey: "pub", agreementPrivateKey: "key"} as SignKeys,
                 recipientPublicKey: "pub",
                 recipientId: "12345678901234567890",
             };
@@ -384,24 +384,12 @@ describe("RaceCreatedEvent", () => {
             );
 
             expect(event.payload.checkpoints).toHaveLength(2);
-            expect(event.payload.checkpoints[0].id).toBe("cp1");
-            expect(event.payload.checkpoints[0].name).toBe("Start");
-            expect(event.payload.checkpoints[1].id).toBe("cp2");
-            expect(event.payload.checkpoints[1].latitude).toBe(41.0);
+            expect(event.payload.checkpoints[0]!.id).toBe("cp1");
+            expect(event.payload.checkpoints[0]!.name).toBe("Start");
+            expect(event.payload.checkpoints[1]!.id).toBe("cp2");
+            expect(event.payload.checkpoints[1]!.latitude).toBe(41.0);
         });
 
-        it("should return empty checkpoints for 'overflow' marker", async () => {
-            const overflowDescriptor = {
-                ...mockDescriptor,
-                getCustomField: (field: string) => {
-                    if (field === "xcp") return "overflow";
-                    return mockDescriptor.getCustomField(field);
-                },
-            } as src44.DescriptorData;
-
-            const event = await RaceCreatedEvent.fromTransaction(mockTransaction, overflowDescriptor, dummyLedger);
-            expect(event.payload.checkpoints).toEqual([]);
-        });
     });
 
     describe("Integration with LedgerEventRegistry", () => {

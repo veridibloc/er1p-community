@@ -325,15 +325,17 @@ describe("Checkpoint Helper Functions", () => {
       const result = deserializeCheckpoints(serialized);
 
       expect(result).toHaveLength(2);
-      expect(result[0].type).toBe("in");
-      expect(result[1].type).toBe("out");
+      const cp1 = result[0]!;
+      const cp2 = result[1]!;
+      expect(cp1.type).toBe("in");
+      expect(cp2.type).toBe("out");
       // v2 should inherit coords from v1
-      expect(result[1].latitude).toBe(result[0].latitude);
-      expect(result[1].longitude).toBe(result[0].longitude);
-      expect(result[1].distanceKilometer).toBe(result[0].distanceKilometer);
-      expect(result[1].elevationGain).toBe(result[0].elevationGain);
-      expect(result[1].elevationLoss).toBe(result[0].elevationLoss);
-      expect(result[1].elevation).toBe(result[0].elevation);
+      expect(cp2.latitude).toBe(cp1.latitude);
+      expect(cp2.longitude).toBe(cp1.longitude);
+      expect(cp2.distanceKilometer).toBe(cp1.distanceKilometer);
+      expect(cp2.elevationGain).toBe(cp1.elevationGain);
+      expect(cp2.elevationLoss).toBe(cp1.elevationLoss);
+      expect(cp2.elevation).toBe(cp1.elevation);
     });
 
     it("should round-trip mixed v1/v2 checkpoints", () => {
@@ -348,12 +350,12 @@ describe("Checkpoint Helper Functions", () => {
       const result = deserializeCheckpoints(serialized);
 
       expect(result).toHaveLength(4);
-      expect(result[0].type).toBe("split");
-      expect(result[1].type).toBe("in");
-      expect(result[2].type).toBe("out");
-      expect(result[2].latitude).toBe(result[1].latitude);
-      expect(result[3].type).toBe("split");
-      expect(result[3].latitude).toBe(42.0);
+      expect(result[0]!.type).toBe("split");
+      expect(result[1]!.type).toBe("in");
+      expect(result[2]!.type).toBe("out");
+      expect(result[2]!.latitude).toBe(result[1]!.latitude);
+      expect(result[3]!.type).toBe("split");
+      expect(result[3]!.latitude).toBe(42.0);
     });
 
     it("backward compatibility: v1-only data deserializes correctly", () => {
@@ -361,9 +363,9 @@ describe("Checkpoint Helper Functions", () => {
       const v1Data = "1,cp1,Start,0.00,40.7128,-74.0060,0,0,100,0,s,1,cp2,Mid,10.00,41.0000,-73.0000,200,50,300,120,i";
       const result = deserializeCheckpoints(v1Data);
       expect(result).toHaveLength(2);
-      expect(result[0].id).toBe("cp1");
-      expect(result[1].id).toBe("cp2");
-      expect(result[1].latitude).toBe(41.0);
+      expect(result[0]!.id).toBe("cp1");
+      expect(result[1]!.id).toBe("cp2");
+      expect(result[1]!.latitude).toBe(41.0);
     });
   });
 
