@@ -1,8 +1,8 @@
 import { LedgerEventRegistry } from "./ledger-event-registry";
-import type { Transaction } from "@signumjs/core";
+import type { Ledger, Transaction } from "@signumjs/core";
 import { src44 } from "@signumjs/standards";
 import { EventName } from "../event-name";
-import type {LedgerEvent, SerializableLedgerEvent} from "../ledger-event.types.ts";
+import type {LedgerEvent, LedgerEventContext, SerializableLedgerEvent} from "../ledger-event.types.ts";
 
 export class LedgerEventParseError extends Error {
   constructor(
@@ -22,16 +22,6 @@ export class LedgerEventParseError extends Error {
  * @implements {LedgerEvent<T>}
  */
 export abstract class AbstractLedgerEvent<T = any> implements LedgerEvent<T> {
-  /**
-   * Constructs a new instance with the specified parameters.
-   *
-   * @param {string} name - The type/name of the event.
-   * @param {number} version - The version of the events payload.
-   * @param {T} payload - The payload associated with the object.
-   * @param {Transaction} [tx] - An optional transaction associated with the object.
-   * If tx exists, then it means that the event was created from a transaction, i.e. was dispatched to the  legder
-   * @return {void} This constructor does not return a value.
-   */
   protected constructor(
     public readonly name: string,
     public readonly version: number,
@@ -50,17 +40,13 @@ export abstract class AbstractLedgerEvent<T = any> implements LedgerEvent<T> {
 
   /**
    * Parses a given transaction and attempts to convert it into a specific ledger event instance.
-   *
-   * @param {Transaction} tx - The transaction to be parsed, which contains the attachment holding the event data.
-   * @param {LedgerEventRegistry} eventRegistry - The registry that maps event types to their corresponding event classes.
-   * @return {TEvent} The parsed and validated event instance of the specified type.
-   * @throws {LedgerEventParseError} If the event type is not found, if the event type is unknown,
-   * or if an error occurs during parsing or validation.
+   * Events that need to resolve linked overflow transactions will use the optional ledger parameter.
    */
-  public static parse<TEvent extends AbstractLedgerEvent>(
+  public static async parse<TEvent extends AbstractLedgerEvent>(
     tx: Transaction,
     eventRegistry: LedgerEventRegistry,
-  ): TEvent {
+    ledger: Ledger,
+  ): Promise<TEvent> {
     try {
       if (!tx.attachment.message)
         throw new LedgerEventParseError(
@@ -84,7 +70,7 @@ export abstract class AbstractLedgerEvent<T = any> implements LedgerEvent<T> {
         );
       }
 
-      const event = EventClass.fromTransaction(tx, descriptorData);
+      const event = await EventClass.fromTransaction(tx, descriptorData, ledger);
       const errors = event.validate();
       if (errors.length > 0) {
         throw new LedgerEventParseError(
@@ -103,17 +89,15 @@ export abstract class AbstractLedgerEvent<T = any> implements LedgerEvent<T> {
 
   /**
    * Parses a given transaction and attempts to convert it into a specific ledger event instance.
-   *
-   * @param {Transaction} tx - The transaction to be parsed, which contains the attachment holding the event data.
-   * @param {LedgerEventRegistry} eventRegistry - The registry that maps event types to their corresponding event classes.
-   * @return {TEvent | null} The parsed and validated event instance of the specified type, or null if an error occurs.
+   * Returns null if parsing fails.
    */
-  public static safeParse<TEvent extends AbstractLedgerEvent>(
+  public static async safeParse<TEvent extends AbstractLedgerEvent>(
     tx: Transaction,
     eventRegistry: LedgerEventRegistry,
-  ): TEvent | null {
+    ledger: Ledger,
+  ): Promise<TEvent | null> {
     try {
-      return AbstractLedgerEvent.parse<TEvent>(tx, eventRegistry);
+      return await AbstractLedgerEvent.parse<TEvent>(tx, eventRegistry, ledger);
     } catch (error: any) {
       console.debug(
         `Event Parsing Failed for tx: ${tx.transaction}`,
@@ -127,24 +111,23 @@ export abstract class AbstractLedgerEvent<T = any> implements LedgerEvent<T> {
 
   /**
    * Abstract method to implement the descriptor logic using the provided DescriptorDataBuilder.
-   *
-   * @param {src44.DescriptorDataBuilder} descriptorBuilder - The builder instance used to create or manage descriptor data.
-   * @return {src44.DescriptorData} The resulting descriptor data created or modified by this method.
+   * Events that need multi-transaction support can use the optional context.
    */
   protected abstract descriptorImpl(
     descriptorBuilder: src44.DescriptorDataBuilder,
-  ): src44.DescriptorData;
+    context: LedgerEventContext,
+  ): Promise<src44.DescriptorData>;
 
   /**
-   * Retrieves the descriptor data by invoking a builder with the specified type.
-   *
-   * @return {src44.DescriptorData} The constructed descriptor data.
+   * Builds and returns the SRC44 descriptor for this event.
+   * The optional context provides ledger access for events that need to send linked transactions.
    */
-  public descriptor(): src44.DescriptorData {
+  public async descriptor(context: LedgerEventContext): Promise<src44.DescriptorData> {
     return this.descriptorImpl(
       src44.DescriptorDataBuilder.create(
         new EventName(this.name, this.version).toString(),
       ),
+      context,
     );
   }
 }

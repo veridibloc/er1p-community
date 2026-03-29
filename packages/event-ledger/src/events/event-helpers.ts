@@ -35,6 +35,8 @@ export const Src44FieldNames = {
   CP_WEATHER_PRECIPITATION: "xwr",
   CP_ACTION: "xact",
   CP_REASON: "xrsn",
+  CP_OVERFLOW_ORDER: "xord",
+  CP_OVERFLOW_NEXT: "xntx"
 };
 
 export const Validators = {

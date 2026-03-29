@@ -23,12 +23,6 @@ interface FetchPendingEventsArgs {
   eventNames?: EventName[];
 }
 
-interface FetchPendingEventsArgs {
-  recipientId?: string;
-  senderId?: string;
-  eventNames?: EventName[];
-}
-
 interface FetchEventsArgs extends FetchPendingEventsArgs {
   startBlockHeight?: number;
   endBlockHeight?: number;
@@ -62,13 +56,8 @@ export class EventLedger {
   /**
    * Dispatches an event to a recipient by sending either a transaction with an amount or a message.
    *
-   * @param {object} args - The parameters required to perform the dispatch.
-   * @param {Event} args.event - The event to be dispatched, containing its descriptor and other details.
-   * @param {string} args.recipientPublicKey - The public key of the recipient to whom the event is being dispatched.
-   * @param {object} args.senderKeys - The sender's key pair containing a public key and a private key used for signing.
-   * @param {Amount} [args.amount] - The amount to be sent to the recipient. If undefined, only a message is sent.
-   * @return {Promise<TransactionId>} A promise that resolves with the transaction ID of the sent event, if successful.
-   * @throws {EventLedgerError} Throws this error if any issues occur during the dispatch process, such as an HTTP error.
+   * The event's descriptor() is called with a context containing the ledger and signing keys,
+   * allowing events to send linked overflow transactions if needed.
    */
   async dispatch({
     event,
@@ -77,12 +66,20 @@ export class EventLedger {
     amount,
   }: DispatchArgs): Promise<TransactionId> {
     try {
-      const attachment = new AttachmentMessage({
-        message: event.descriptor().stringify(),
-        messageIsText: true,
-      });
       const recipientId =
         Address.fromPublicKey(recipientPublicKey).getNumericId();
+
+      const descriptorData = await event.descriptor({
+        ledger: this.ledger,
+        senderKeys,
+        recipientPublicKey,
+        recipientId,
+      });
+
+      const attachment = new AttachmentMessage({
+        message: descriptorData.stringify(),
+        messageIsText: true,
+      });
       const fee = this.calculateFee(attachment);
       if (amount) {
         return (await this.ledger.transaction.sendAmountToSingleRecipient({
@@ -129,12 +126,6 @@ export class EventLedger {
 
   /**
    * Fetches pending ledger events that match specific criteria based on the provided arguments.
-   *
-   * @param {Object} args The filtering criteria for fetching pending events.
-   * @param {string} [args.recipientId] The ID of the recipient to filter events by. Only events for this recipient will be fetched.
-   * @param {string} [args.senderId] The ID of the sender to filter events by. Only events from this sender will be fetched.
-   * @param {string[]} [args.eventNames] The list of event names to filter by. Only events with these names will be fetched.
-   * @return {Promise<LedgerEvent[]>} A promise that resolves to an array of ledger events that match the specified criteria.
    */
   async fetchPendingEvents({
     recipientId,
@@ -155,7 +146,7 @@ export class EventLedger {
       if (senderId && transaction.sender !== senderId) {
         continue;
       }
-      const e = AbstractLedgerEvent.safeParse(transaction, this.eventRegistry);
+      const e = await AbstractLedgerEvent.safeParse(transaction, this.eventRegistry, this.ledger);
       if (!e) {
         continue;
       }
@@ -177,21 +168,7 @@ export class EventLedger {
   }
 
   /**
-   * Fetches ledger events based on the provided filters and criteria. This method queries events
-   * between a specific sender and/or recipient within an optional block height range
-   * and filters by event names if provided.
-   *
-   * @param {Object} args                       The arguments for fetching events.
-   * @param {string} args.recipientId           The recipient's account ID (required).
-   * @param {string} args.senderId              The sender's account ID (required).
-   * @param {number} [args.startBlockHeight]    The starting block height for filtering events (optional).
-   * @param {number} [args.endBlockHeight]      The ending block height for filtering events (optional).
-   * @param {string[]} [args.eventNames]        A list of event names to filter by (optional).
-   * @param {number} [args.firstIndex=0]        The index of the first event to include in the result (default: 0). Useful for pagination
-   * @param {number} [args.lastIndex=500]       The index of the last event to include in the result (default: 500) maximal 500 events are returned per call
-   *
-   * @return {Promise<LedgerEvent[]>}           A promise that resolves to an array of ledger events that match the provided criteria.
-   * @throws {Error}                            Throws an error if `recipientId` or `senderId` is not provided.
+   * Fetches ledger events based on the provided filters and criteria.
    */
   async fetchEvents({
     recipientId,
@@ -282,7 +259,7 @@ export class EventLedger {
       }
       if (startTimestamp > 0 && tx.timestamp < startTimestamp) continue;
       if (endTimestamp > 0 && tx.timestamp > endTimestamp) continue;
-      const e = AbstractLedgerEvent.safeParse(tx, this.eventRegistry);
+      const e = await AbstractLedgerEvent.safeParse(tx, this.eventRegistry, this.ledger);
       if (!e) {
         continue;
       }

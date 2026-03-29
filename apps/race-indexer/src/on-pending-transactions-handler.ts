@@ -16,7 +16,7 @@ export async function onPendingTransactionHandler(transactions: Transaction[], c
     for (const tx of transactions) {
         try {
             const registry = LedgerEventRegistry.getInstance()
-            const event = AbstractLedgerEvent.parse(tx, registry)
+            const event = await AbstractLedgerEvent.parse(tx, registry, context.eventLedger.ledger)
 
             // check if we have already processed this tx
             if (event.tx && context.processedPendingTx.has(event.tx.transaction)) {
