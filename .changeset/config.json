@@ -7,5 +7,10 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "@er1p/race-radar",
+    "race-indexer",
+    "@er1p-community/eslint-config",
+    "@er1p-community/typescript-config"
+  ]
 }
