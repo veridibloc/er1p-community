@@ -72,7 +72,7 @@ git add .
 git commit -m "fix: validation bug in race created event"
 
 # 4. When ready to release (usually on main branch)
-bun run version-packages
+bun run new-version
 git add .
 git commit -m "chore: version packages"
 
