@@ -1,6 +1,6 @@
 {
   "name": "@er1p-community/event-ledger",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Isomorphic event ledger functionality for ER1P blockchain interactions",
   "type": "module",
   "private": "false",
@@ -65,7 +65,9 @@
   "turbo": {
     "tasks": {
       "build": {
-        "outputs": ["dist/**"]
+        "outputs": [
+          "dist/**"
+        ]
       }
     }
   },

@@ -1,6 +1,6 @@
 {
   "name": "@er1p/race-radar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "build": "bun --bun next build",
@@ -78,7 +78,10 @@
   "turbo": {
     "tasks": {
       "build": {
-        "outputs": [".next/**", "!.next/cache/**"]
+        "outputs": [
+          ".next/**",
+          "!.next/cache/**"
+        ]
       }
     }
   }

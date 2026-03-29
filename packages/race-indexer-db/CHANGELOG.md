@@ -1,5 +1,11 @@
 # @er1p-community/race-indexer-db
 
+## 0.2.1
+
+### Patch Changes
+
+- Checkpoint overflow splitting into tx data
+
 ## 0.2.0
 
 ### Minor Changes

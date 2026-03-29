@@ -37,7 +37,9 @@
   "turbo": {
     "tasks": {
       "build": {
-        "outputs": ["dist/**"]
+        "outputs": [
+          "dist/**"
+        ]
       }
     }
   }
