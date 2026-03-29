@@ -10,7 +10,6 @@
   "ignore": [
     "@er1p/race-radar",
     "race-indexer",
-    "@er1p-community/eslint-config",
-    "@er1p-community/typescript-config"
+    "@er1p-community/eslint-config"
   ]
 }

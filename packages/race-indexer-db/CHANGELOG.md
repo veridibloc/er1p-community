@@ -1,5 +1,11 @@
 # @er1p-community/race-indexer-db
 
+## 0.2.1
+
+### Patch Changes
+
+- Introducing linked tx for checkpoints payload overflow
+
 ## 0.2.0
 
 ### Minor Changes
