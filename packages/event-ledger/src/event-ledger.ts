@@ -16,6 +16,7 @@ import { LedgerEventRegistry } from "./events/ledger-event-registry";
 import { AbstractLedgerEvent } from "./events/abstract-ledger-event";
 import type { LedgerEvent } from "./ledger-event.types";
 import type { EventName } from "./event-name";
+import { calculateTransactionFee } from "./lib/calculateTransactionFee";
 
 interface FetchPendingEventsArgs {
   recipientId?: string;
@@ -31,10 +32,27 @@ interface FetchEventsArgs extends FetchPendingEventsArgs {
 }
 
 interface DispatchArgs {
+  /**
+   * The ledger event to be dispatched.
+   */
   event: LedgerEvent;
+  /**
+   * The signing keys of the sender of the event.
+   */
   senderKeys: SignKeys;
+  /**
+   * The public key of the recipient of the event.
+   */
   recipientPublicKey: string;
+  /**
+   * If specified, the event will be sent as a transaction with this amount.
+   * If not specified, the event will be sent as a pure message.
+   */
   amount?: Amount;
+  /**
+   * Overrides fee calculation
+   */
+  customFee?: Amount;
 }
 
 export class EventLedgerError extends Error {}
@@ -64,6 +82,7 @@ export class EventLedger {
     recipientPublicKey,
     senderKeys,
     amount,
+      customFee,
   }: DispatchArgs): Promise<TransactionId> {
     try {
       const recipientId =
@@ -80,7 +99,8 @@ export class EventLedger {
         message: descriptorData.stringify(),
         messageIsText: true,
       });
-      const fee = this.calculateFee(attachment);
+
+      const fee = customFee ?? calculateTransactionFee(attachment.message.length);
       if (amount) {
         return (await this.ledger.transaction.sendAmountToSingleRecipient({
           recipientPublicKey,
@@ -276,29 +296,4 @@ export class EventLedger {
     return events;
   }
 
-  private calculateFee(attachment: AttachmentMessage): Amount {
-    const TxOverhead = 190;
-    const MinSize = 190;
-    const MaxSize = 1000;
-    const MinFee = 0.01;
-    const MaxFee = 0.06;
-    const messageSize = attachment.message.length;
-    const totalSize = TxOverhead + messageSize;
-
-    if (messageSize > MaxSize) {
-      throw new Error(
-        `Message size is too big - Got: ${messageSize}b Max is ${MaxSize}b`,
-      );
-    }
-
-    const clampedSize = Math.max(MinSize, Math.min(MaxSize, totalSize));
-    const sizeRatio = (clampedSize - MinSize) / (MaxSize - MinSize);
-    const calculatedFee = MinFee + sizeRatio * (MaxFee - MinFee);
-    const roundedFee = Math.round(calculatedFee * 1000) / 1000;
-
-    // Ensure fee never exceeds MaxFee after rounding
-    const cappedFee = Math.min(roundedFee, MaxFee);
-
-    return Amount.fromSigna(cappedFee);
-  }
 }

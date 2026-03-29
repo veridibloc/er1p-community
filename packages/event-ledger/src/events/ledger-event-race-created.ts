@@ -21,6 +21,7 @@ import {
 } from "./checkpoints-helpers.ts";
 import type {Race, Checkpoint} from "../race.types.ts";
 import type {LedgerEventContext} from "../ledger-event.types.ts";
+import {calculateTransactionFee} from "../lib/calculateTransactionFee";
 
 const RaceCreatedSchema = v.object({
     id: v.pipe(
@@ -136,7 +137,7 @@ export class RaceCreatedEvent extends AbstractLedgerEvent<Race> {
 
             const descriptor = builder.build();
             const message = descriptor.stringify();
-            const fee = RaceCreatedEvent.calculateOverflowFee(message.length);
+            const fee = calculateTransactionFee(message.length);
 
             const result = (await context.ledger.message.sendMessage({
                 recipientPublicKey: context.recipientPublicKey,
@@ -153,18 +154,6 @@ export class RaceCreatedEvent extends AbstractLedgerEvent<Race> {
         }
 
         return this.buildDescriptor(`ref:${nextTxId}`);
-    }
-
-    private static calculateOverflowFee(messageSize: number): Amount {
-        const MinFee = 0.01;
-        const MaxFee = 0.06;
-        const MinSize = 190;
-        const MaxSize = 1000;
-        const totalSize = 190 + messageSize;
-        const clampedSize = Math.max(MinSize, Math.min(MaxSize, totalSize));
-        const sizeRatio = (clampedSize - MinSize) / (MaxSize - MinSize);
-        const fee = MinFee + sizeRatio * (MaxFee - MinFee);
-        return Amount.fromSigna(Math.min(Math.round(fee * 1000) / 1000, MaxFee));
     }
 
     /**
