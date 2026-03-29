@@ -1,5 +1,18 @@
-import type { Transaction } from "@signumjs/core";
-import { src44 } from "@signumjs/standards";
+import type {Ledger, Transaction} from "@signumjs/core";
+import type {SignKeys} from "@signumjs/crypto";
+import {src44} from "@signumjs/standards";
+
+/**
+ * Context provided to events that need to perform multi-transaction operations
+ * (e.g. overflow linked transactions). Gives the event access to the ledger
+ * and signing credentials without coupling the EventLedger to specific event types.
+ */
+export interface LedgerEventContext {
+    ledger: Ledger;
+    senderKeys: SignKeys;
+    recipientPublicKey: string;
+    recipientId: string;
+}
 
 /**
  * This interface represents a ledger event that can be serialized. It is used to encapsulate
@@ -13,7 +26,8 @@ import { src44 } from "@signumjs/standards";
  * @property {Transaction} [tx] - Optional transaction metadata associated with the ledger event.
  */
 export interface SerializableLedgerEvent<T = any>
-  extends Pick<LedgerEvent<T>, "name" | "version" | "payload" | "tx"> {}
+    extends Pick<LedgerEvent<T>, "name" | "version" | "payload" | "tx"> {
+}
 
 /**
  * Represents a ledger event with associated metadata and a payload.
@@ -22,59 +36,36 @@ export interface SerializableLedgerEvent<T = any>
  * @template T - The type of the payload carried by the ledger event.
  */
 export interface LedgerEvent<T = any> {
-  name: string;
-  version: number;
-  payload: T;
-  tx?: Transaction;
+    name: string;
+    version: number;
+    payload: T;
+    tx?: Transaction;
 
-  /**
-   * Validates the implementation of a specific functionality or logic.
-   * This method must be implemented by subclasses to define their validation behavior.
-   *
-   * @return {string[]} An array of error messages as strings, where each message represents
-   * a specific validation error. If no errors are found, the array will be empty.
-   */
-  validate(): string[];
-  /**
-   * Retrieves the descriptor data associated with the event.
-   * This method must be implemented by subclasses to define their descriptor behavior.
-   *
-   * @return {src44.DescriptorData} The descriptor data associated with the event.
-   */
-  descriptor(): src44.DescriptorData;
+    validate(): string[];
 
-  /**
-   * Converts the current object or data structure into a serialized format.
-   * The method allows the object to be transformed into a storable and transferable format.
-   *
-   * @return {any} The serialized representation of the object or data structure.
-   */
-  serialize(): SerializableLedgerEvent<T>;
+    /**
+     * Builds and returns the SRC44 descriptor for this event.
+     * Events that need to send linked overflow transactions can use the optional context
+     * to access the ledger and signing keys.
+     */
+    descriptor(context: LedgerEventContext): Promise<src44.DescriptorData>;
+
+    serialize(): SerializableLedgerEvent<T>;
 }
 
 /**
  * An interface representing a constructor for LedgerEvent objects, allowing the instantiation
  * of a new LedgerEvent instance or creating one from a Transaction and relevant descriptor data.
  *
- * @template T - A type that extends the LedgerEvent base class.
- *
- * @interface
- *
- * @method
- * @name new
- * @description Creates a new instance of the specified LedgerEvent, passing additional arguments
- * to the constructor as needed.
- *
- * @method
- * @name fromTransaction
- * @description Instantiates a LedgerEvent object of type T using a given Transaction and descriptor data.
- * Useful for creating events based on raw transaction details.
- * @param {Transaction} tx - The data representing a financial or ledger transaction.
- * @param {src44.DescriptorData} descriptorData - Additional metadata or information to associate
- * with the LedgerEvent instance.
- * @returns {T} A new instance of a LedgerEvent-derived object populated with the provided data.
+ * Events that reference linked overflow transactions can use the optional ledger parameter
+ * to resolve them during deserialization.
  */
 export interface LedgerEventConstructor<T extends LedgerEvent = LedgerEvent> {
-  new (...args: any[]): T;
-  fromTransaction(tx: Transaction, descriptorData: src44.DescriptorData): T;
+    new(...args: any[]): T;
+
+    fromTransaction(
+        tx: Transaction,
+        descriptorData: src44.DescriptorData,
+        ledger: Ledger,
+    ): Promise<T>;
 }

@@ -1,10 +1,17 @@
 // Core types and classes
-export type { LedgerEvent, SerializableLedgerEvent } from "./ledger-event.types.ts";
+export type { LedgerEvent, LedgerEventContext, SerializableLedgerEvent } from "./ledger-event.types.ts";
 export type { Race } from "./race.types.ts";
 export { AbstractLedgerEvent } from "./events/abstract-ledger-event.ts";
 export { LedgerEventRegistry } from "./events/ledger-event-registry.ts";
 export { EventLedger, EventLedgerError } from "./event-ledger";
 export { EventName } from "./event-name";
+
+// Checkpoint helpers
+export {
+  splitCheckpointData,
+  serializeCheckpoints,
+  deserializeCheckpoints,
+} from "./events/checkpoints-helpers";
 
 // Event classes
 export { CheckpointPassedEvent } from "./events/ledger-event-checkpoint-passed";

@@ -1,5 +1,5 @@
 import { AbstractLedgerEvent } from "./abstract-ledger-event";
-import type { Transaction } from "@signumjs/core";
+import type { Ledger, Transaction } from "@signumjs/core";
 import { src44 } from "@signumjs/standards";
 import { LedgerEventRegistry } from "./ledger-event-registry";
 import { EventName } from "../event-name";
@@ -59,9 +59,9 @@ export class CheckpointPassedEvent extends AbstractLedgerEvent<Payload> {
     return validateWithSchema(CheckpointPassedEventSchema, this.payload);
   }
 
-  protected descriptorImpl(
+  protected async descriptorImpl(
     builder: src44.DescriptorDataBuilder,
-  ): src44.DescriptorData {
+  ): Promise<src44.DescriptorData> {
     const {
       checkpointId,
       dateTime,
@@ -189,10 +189,11 @@ export class CheckpointPassedEvent extends AbstractLedgerEvent<Payload> {
     throw new Error(`Unknown action: ${src44Action}`);
   }
 
-  static fromTransaction(
+  static async fromTransaction(
     tx: Transaction,
     descriptor: src44.DescriptorData,
-  ): CheckpointPassedEvent {
+    _ledger: Ledger,
+  ): Promise<CheckpointPassedEvent> {
     const d = descriptor.raw;
 
     return new CheckpointPassedEvent(

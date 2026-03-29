@@ -18,7 +18,7 @@ const raceFlowEventNames = Object.values(RaceFlowEventNames) as string[]
 export async function onTransactionHandler(tx: Transaction, context: RaceIndexerContext) {
     try {
         const registry = LedgerEventRegistry.getInstance()
-        const event = AbstractLedgerEvent.parse(tx, registry)
+        const event = await AbstractLedgerEvent.parse(tx, registry, context.eventLedger.ledger)
 
         if (event.name === CheckpointPassedEvent.Name) {
             const shallUpdateLiveLeaderboard = context.mode === 'listening'

@@ -1,5 +1,5 @@
 import { AbstractLedgerEvent } from "./abstract-ledger-event";
-import type { Transaction } from "@signumjs/core";
+import type { Ledger, Transaction } from "@signumjs/core";
 import { src44 } from "@signumjs/standards";
 import { Src44FieldNames, validateWithSchema } from "./event-helpers";
 import * as v from "valibot";
@@ -30,9 +30,9 @@ export abstract class BaseRaceFlowEvent extends AbstractLedgerEvent<RaceGenericF
     return validateWithSchema(RaceFlowEventSchema, this.payload);
   }
 
-  protected descriptorImpl(
+  protected async descriptorImpl(
     builder: src44.DescriptorDataBuilder,
-  ): src44.DescriptorData {
+  ): Promise<src44.DescriptorData> {
     const args = this.payload;
     if (args.reason) {
       builder.setDescription(args.reason);
@@ -46,11 +46,12 @@ export abstract class BaseRaceFlowEvent extends AbstractLedgerEvent<RaceGenericF
       .build();
   }
 
-  protected static createFromTransaction<T extends BaseRaceFlowEvent>(
+  protected static async createFromTransaction<T extends BaseRaceFlowEvent>(
     this: new (payload: RaceGenericFlowPayload, tx?: Transaction) => T,
     tx: Transaction,
     descriptor: src44.DescriptorData,
-  ): T {
+    _ledger: Ledger,
+  ): Promise<T> {
     const d = descriptor;
     return new this(
       {
@@ -101,8 +102,8 @@ function createRaceFlowEventClass(
       super(name, version, payload, tx);
     }
 
-    static fromTransaction(tx: Transaction, descriptor: src44.DescriptorData) {
-      return BaseRaceFlowEvent.createFromTransaction.call(this, tx, descriptor);
+    static async fromTransaction(tx: Transaction, descriptor: src44.DescriptorData, ledger: Ledger) {
+      return BaseRaceFlowEvent.createFromTransaction.call(this, tx, descriptor, ledger);
     }
   }
   return RaceFlowEvent;

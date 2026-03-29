@@ -1,5 +1,5 @@
 import { AbstractLedgerEvent } from "./abstract-ledger-event";
-import type { Transaction } from "@signumjs/core";
+import type { Ledger, Transaction } from "@signumjs/core";
 import { src44 } from "@signumjs/standards";
 import { LedgerEventRegistry } from "./ledger-event-registry";
 import { EventName } from "../event-name";
@@ -33,9 +33,9 @@ export class ParticipantConfirmedEvent extends AbstractLedgerEvent<Payload> {
     return validateWithSchema(ParticipantConfirmedEventSchema, this.payload);
   }
 
-  protected descriptorImpl(
+  protected async descriptorImpl(
     builder: src44.DescriptorDataBuilder,
-  ): src44.DescriptorData {
+  ): Promise<src44.DescriptorData> {
     if (this.payload.annotation) {
       builder.setDescription(this.payload.annotation);
     }
@@ -44,10 +44,11 @@ export class ParticipantConfirmedEvent extends AbstractLedgerEvent<Payload> {
       .build();
   }
 
-  static fromTransaction(
+  static async fromTransaction(
     tx: Transaction,
     descriptor: src44.DescriptorData,
-  ): ParticipantConfirmedEvent {
+    _ledger: Ledger,
+  ): Promise<ParticipantConfirmedEvent> {
     return new ParticipantConfirmedEvent(
       {
         bib: descriptor.getCustomField(Src44FieldNames.BIB) as string,
